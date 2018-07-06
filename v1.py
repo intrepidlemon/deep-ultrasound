@@ -8,6 +8,8 @@ from keras.callbacks import ModelCheckpoint, LearningRateScheduler, TensorBoard,
 
 from config import config
 
+MODEL_NAME = "v1"
+
 def data(directory="data"):
     train_datagen = ImageDataGenerator(
             rescale=1./255,
@@ -36,7 +38,7 @@ def model():
     convnet = applications.ResNet50(
             weights = "imagenet",
             include_top=False,
-            input_shape = (config.IMAGE_SIZE, config.IMAPGE_SIZE, 3),
+            input_shape = (config.IMAGE_SIZE, config.IMAGE_SIZE, 3),
             )
     # fix convnet weights to imagenet
     for layer in convnet.layers:
@@ -48,14 +50,14 @@ def model():
     out = Dense(1024, activation="relu")(out)
     out = Dropout(0.5)(out)
     out = Dense(1024, activation="relu")(out)
-    predictions = Dense(16, activation="softmax")(out)
+    predictions = Dense(1, activation="sigmoid")(out)
 
     # creating the final model
-    model = Model(input = convnet.input, output = predictions)
+    model = Model(inputs = convnet.input, outputs = predictions)
 
     # compile the model
     model.compile(
-        loss = "categorical_crossentropy",
+        loss = "binary_crossentropy",
         optimizer = optimizers.SGD(lr=0.0001, momentum=0.9),
         metrics=["accuracy"]
         )
@@ -65,7 +67,7 @@ def model():
 def train(model, training, validation):
     # save the model according to the conditions
     checkpoint = ModelCheckpoint(
-            "vgg16_1.h5",
+            "{}.h5".format(MODEL_NAME),
             monitor='val_acc',
             verbose=1,
             save_best_only=True,
@@ -83,17 +85,17 @@ def train(model, training, validation):
     # Train the model
     model.fit_generator(
         training,
-        samples_per_epoch = training.nb_samples,
+        steps_per_epoch = training.n/config.BATCH_SIZE,
         epochs = config.EPOCHS,
         validation_data = validation,
-        nb_val_samples = validation.nb_samples,
+        validation_steps = validation.n/config.BATCH_SIZE,
         callbacks = [checkpoint, early],
     )
 
 def run():
     training, validation = data()
-    model = mode()
-    train(model, training, validation)
+    model_instance = model()
+    train(model_instance, training, validation)
 
 
 
