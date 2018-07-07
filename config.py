@@ -1,6 +1,7 @@
 import os
 import logging
 
+
 class Config(object):
     IMAGE_SIZE = 200
 
@@ -20,5 +21,6 @@ class Config(object):
     MODEL_DIR = os.path.join(OUTPUT, "models")
     STDOUT_DIR = os.path.join(OUTPUT, "stdout")
     STDERR_DIR = os.path.join(OUTPUT, "stderr")
+
 
 config = Config()

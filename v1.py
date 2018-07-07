@@ -10,36 +10,39 @@ from config import config
 
 MODEL_NAME = "v1"
 
+
 def data(directory="data"):
     train_datagen = ImageDataGenerator(
-            rescale=1./255,
-            shear_range=0.2,
-            zoom_range=0.2,
-            horizontal_flip=True,
-            vertical_flip=True,)
+        rescale=1. / 255,
+        shear_range=0.2,
+        zoom_range=0.2,
+        horizontal_flip=True,
+        vertical_flip=True,
+    )
 
-    test_datagen = ImageDataGenerator(rescale=1./255)
+    test_datagen = ImageDataGenerator(rescale=1. / 255)
 
     train_generator = train_datagen.flow_from_directory(
-            '{}/train'.format(directory),
-            target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE),
-            batch_size=config.BATCH_SIZE,
-            class_mode='binary')
+        '{}/train'.format(directory),
+        target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE),
+        batch_size=config.BATCH_SIZE,
+        class_mode='binary')
 
     validation_generator = test_datagen.flow_from_directory(
-            '{}/validation'.format(directory),
-            target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE),
-            batch_size=config.BATCH_SIZE,
-            class_mode='binary')
+        '{}/validation'.format(directory),
+        target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE),
+        batch_size=config.BATCH_SIZE,
+        class_mode='binary')
 
     return train_generator, validation_generator
 
+
 def model():
     convnet = applications.ResNet50(
-            weights = "imagenet",
-            include_top=False,
-            input_shape = (config.IMAGE_SIZE, config.IMAGE_SIZE, 3),
-            )
+        weights="imagenet",
+        include_top=False,
+        input_shape=(config.IMAGE_SIZE, config.IMAGE_SIZE, 3),
+    )
     # fix convnet weights to imagenet
     for layer in convnet.layers:
         layer.trainable = False
@@ -53,49 +56,47 @@ def model():
     predictions = Dense(1, activation="sigmoid")(out)
 
     # creating the final model
-    model = Model(inputs = convnet.input, outputs = predictions)
+    model = Model(inputs=convnet.input, outputs=predictions)
 
     # compile the model
     model.compile(
-        loss = "binary_crossentropy",
-        optimizer = optimizers.SGD(lr=0.0001, momentum=0.9),
-        metrics=["accuracy"]
-        )
+        loss="binary_crossentropy",
+        optimizer=optimizers.SGD(lr=0.0001, momentum=0.9),
+        metrics=["accuracy"])
 
     return model
+
 
 def train(model, training, validation):
     # save the model according to the conditions
     checkpoint = ModelCheckpoint(
-            "{}.h5".format(MODEL_NAME),
-            monitor='val_acc',
-            verbose=1,
-            save_best_only=True,
-            save_weights_only=False,
-            mode='auto',
-            period=1,
-            )
+        "{}.h5".format(MODEL_NAME),
+        monitor='val_acc',
+        verbose=1,
+        save_best_only=True,
+        save_weights_only=False,
+        mode='auto',
+        period=1,
+    )
     early = EarlyStopping(
-            monitor='val_acc',
-            min_delta=0,
-            patience=10,
-            verbose=1,
-            mode='auto',
-            )
+        monitor='val_acc',
+        min_delta=0,
+        patience=10,
+        verbose=1,
+        mode='auto',
+    )
     # Train the model
     model.fit_generator(
         training,
-        steps_per_epoch = training.n/config.BATCH_SIZE,
-        epochs = config.EPOCHS,
-        validation_data = validation,
-        validation_steps = validation.n/config.BATCH_SIZE,
-        callbacks = [checkpoint, early],
+        steps_per_epoch=training.n / config.BATCH_SIZE,
+        epochs=config.EPOCHS,
+        validation_data=validation,
+        validation_steps=validation.n / config.BATCH_SIZE,
+        callbacks=[checkpoint, early],
     )
+
 
 def run():
     training, validation = data()
     model_instance = model()
     train(model_instance, training, validation)
-
-
-
