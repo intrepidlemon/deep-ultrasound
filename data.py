@@ -38,7 +38,7 @@ def all_features(valid_features=None):
     return out
 
 
-def sort():
+def sort(percent_split=0.4):
     files = all_identifiers(all_files())
     feat = all_features(['benign', 'malignant'])
 
@@ -59,12 +59,12 @@ def sort():
     train = []
     for feature, fs in identifiers_by_feature.items():
         random.shuffle(fs)
-        split = int(len(fs) * 0.2)
+        split = int(len(fs) * percent_split)
         validation.extend(fs[:split])
         train.extend(fs[split:])
 
     random.shuffle(identifiers)
-    split = int(len(identifiers) * 0.2)
+    split = int(len(identifiers) * percent_split)
 
     for i in train:
         if i in feat:
