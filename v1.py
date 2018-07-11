@@ -1,3 +1,4 @@
+import os
 from keras import applications
 from keras.preprocessing.image import ImageDataGenerator
 from keras import optimizers
