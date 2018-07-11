@@ -11,7 +11,7 @@ from config import config
 MODEL_NAME = "v1"
 
 
-def data(directory="data"):
+def data():
     train_datagen = ImageDataGenerator(
         rescale=1. / 255,
         shear_range=0.2,
@@ -23,13 +23,13 @@ def data(directory="data"):
     test_datagen = ImageDataGenerator(rescale=1. / 255)
 
     train_generator = train_datagen.flow_from_directory(
-        '{}/train'.format(directory),
+        config.TRAIN_DIR,
         target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE),
         batch_size=config.BATCH_SIZE,
         class_mode='binary')
 
     validation_generator = test_datagen.flow_from_directory(
-        '{}/validation'.format(directory),
+        config.VALIDATION_DIR,
         target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE),
         batch_size=config.BATCH_SIZE,
         class_mode='binary')
@@ -70,7 +70,7 @@ def model():
 def train(model, training, validation):
     # save the model according to the conditions
     checkpoint = ModelCheckpoint(
-        "{}.h5".format(MODEL_NAME),
+        "{}.h5".format(os.path.join(config.MODEL_DIR, MODEL_NAME)),
         monitor='val_acc',
         verbose=1,
         save_best_only=True,
@@ -100,3 +100,7 @@ def run():
     training, validation = data()
     model_instance = model()
     train(model_instance, training, validation)
+
+
+if __name__ == '__main__':
+    run()

@@ -5,7 +5,7 @@ import logging
 class Config(object):
     IMAGE_SIZE = 200
 
-    BATCH_SIZE = 1
+    BATCH_SIZE = 16
 
     EPOCHS = 50
     SAMPLES_VALIDATION = 300
@@ -15,6 +15,13 @@ class Config(object):
     PRINT_SQL = False
     SECRET = "example secret key"
     LOG_LEVEL = logging.DEBUG
+
+    DATA = "data"
+    RAW_DIR = os.path.join(DATA, "raw")
+    TRAIN_DIR = os.path.join(DATA, "train")
+    TEST_DIR = os.path.join(DATA, "test")
+    VALIDATION_DIR = os.path.join(DATA, "validation")
+    FEATURES = os.path.join(DATA, "features.csv")
 
     OUTPUT = "output"
     DB_URL = "sqlite:///{}/results.db".format(OUTPUT)
