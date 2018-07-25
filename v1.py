@@ -75,10 +75,13 @@ def model():
 def train(model, training, validation):
     # save the model according to the conditions
     checkpoint = ModelCheckpoint(
-        "{}-{}.h5".format(
-            int(datetime.utcnow().timestamp()),
-            os.path.join(config.MODEL_DIR, MODEL_NAME),
+        os.path.join(
+            config.MODEL_DIR,
+            "{}-{}.h5".format(
+                int(datetime.utcnow().timestamp()),
+                MODEL_NAME,
             ),
+        ),
         monitor='val_acc',
         verbose=1,
         save_best_only=True,
