@@ -5,7 +5,7 @@ import logging
 class Config(object):
     IMAGE_SIZE = 200
 
-    BATCH_SIZE = 128
+    BATCH_SIZE = 16
 
     EPOCHS = 50
 
