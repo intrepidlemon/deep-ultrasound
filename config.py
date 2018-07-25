@@ -7,7 +7,7 @@ class Config(object):
 
     BATCH_SIZE = 16
 
-    EPOCHS = 50
+    EPOCHS = 500
 
     DEVELOPMENT = True
     DEBUG = True

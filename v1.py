@@ -89,7 +89,7 @@ def train(model, training, validation):
     early = EarlyStopping(
         monitor='val_acc',
         min_delta=0,
-        patience=10,
+        patience=config.EPOCHS/10,
         verbose=1,
         mode='auto',
     )
