@@ -23,7 +23,10 @@ def all_files(prefix="free"):
 def all_identifiers(files):
     out = dict()
     for f in files:
-        out[os.path.basename(f).split("-")[1]] = f
+        identifier = os.path.basename(f).split("-")[1]
+        files = out.get(identifier, [])
+        files.append(f)
+        out[identifier] = files
     return out
 
 
@@ -38,7 +41,7 @@ def all_features(valid_features=None):
     return out
 
 
-def sort(percent_split=0.4):
+def sort(percent_split=0.2):
     files = all_identifiers(all_files())
     feat = all_features(['benign', 'malignant'])
 
@@ -68,10 +71,12 @@ def sort(percent_split=0.4):
 
     for i in train:
         if i in feat:
-            copy(files[i], os.path.join(config.TRAIN_DIR, feat[i]))
+            for f in files[i]:
+                copy(f, os.path.join(config.TRAIN_DIR, feat[i]))
     for i in validation:
         if i in feat:
-            copy(files[i], os.path.join(config.VALIDATION_DIR, feat[i]))
+            for f in files[i]:
+                copy(f, os.path.join(config.VALIDATION_DIR, feat[i]))
 
 
 if __name__ == '__main__':
