@@ -6,9 +6,10 @@ name = "pypi"
 [packages]
 jupyter = "*"
 tensorflow = "*"
-keras = "*"
+keras = {extras = ["visualize"]}
 pillow = "*"
 yapf = "*"
+pydot = "*"
 
 [dev-packages]
 

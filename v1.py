@@ -51,9 +51,15 @@ def model():
     # custom Layers
     out = convnet.output
     out = Flatten()(out)
-    out = Dense(1024, activation="relu")(out)
+    out = Dense(256, activation="relu")(out)
     out = Dropout(0.5)(out)
-    out = Dense(1024, activation="relu")(out)
+    out = Dense(128, activation="relu")(out)
+    out = Dropout(0.5)(out)
+    out = Dense(64, activation="relu")(out)
+    out = Dropout(0.5)(out)
+    out = Dense(32, activation="relu")(out)
+    out = Dropout(0.5)(out)
+    out = Dense(16, activation="relu")(out)
     predictions = Dense(1, activation="sigmoid")(out)
 
     # creating the final model
