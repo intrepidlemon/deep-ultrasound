@@ -76,8 +76,8 @@ def train(model, training, validation):
     # save the model according to the conditions
     checkpoint = ModelCheckpoint(
         "{}-{}.h5".format(
-            os.path.join(config.MODEL_DIR, MODEL_NAME),
             int(datetime.utcnow().timestamp()),
+            os.path.join(config.MODEL_DIR, MODEL_NAME),
             ),
         monitor='val_acc',
         verbose=1,
