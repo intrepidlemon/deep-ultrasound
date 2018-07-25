@@ -8,7 +8,6 @@ class Config(object):
     BATCH_SIZE = 128
 
     EPOCHS = 50
-    SAMPLES_VALIDATION = 300
 
     DEVELOPMENT = True
     DEBUG = True

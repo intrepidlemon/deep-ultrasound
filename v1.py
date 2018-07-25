@@ -45,9 +45,6 @@ def model():
         include_top=False,
         input_shape=(config.IMAGE_SIZE, config.IMAGE_SIZE, 3),
     )
-    # fix convnet weights to imagenet
-    for layer in convnet.layers:
-        layer.trainable = False
 
     # custom Layers
     out = convnet.output
