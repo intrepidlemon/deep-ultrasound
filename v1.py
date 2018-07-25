@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from keras import applications
 from keras.preprocessing.image import ImageDataGenerator
 from keras import optimizers
@@ -77,7 +78,10 @@ def model():
 def train(model, training, validation):
     # save the model according to the conditions
     checkpoint = ModelCheckpoint(
-        "{}.h5".format(os.path.join(config.MODEL_DIR, MODEL_NAME)),
+        "{}-{}.h5".format(
+            os.path.join(config.MODEL_DIR, MODEL_NAME),
+            int(datetime.utcnow().timestamp()),
+            ),
         monitor='val_acc',
         verbose=1,
         save_best_only=True,
