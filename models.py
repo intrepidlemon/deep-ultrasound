@@ -1,3 +1,5 @@
-from v1 import run as v1
+import v1
 
-run = v1
+models = {
+    "v1": v1,
+}

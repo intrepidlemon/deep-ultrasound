@@ -72,13 +72,13 @@ def model():
     return model
 
 
-def train(model, training, validation):
+def train(model, training, validation, run_id):
     # save the model according to the conditions
     checkpoint = ModelCheckpoint(
         os.path.join(
             config.MODEL_DIR,
             "{}-{}.h5".format(
-                int(datetime.utcnow().timestamp()),
+                run_id,
                 MODEL_NAME,
             ),
         ),
@@ -106,12 +106,18 @@ def train(model, training, validation):
         callbacks=[checkpoint, early],
     )
 
+def test(model, train, validation):
+    validation_loss, validation_accuracy = model.evaluate_generator(validation)
+    train_loss, train_accuracy = model.evaluate_generator(train)
+    return train_loss, train_accuracy, validation_loss, validation_accuracy
 
-def run():
+def run(run_id=None):
+    if run_id is None:
+        run_id = int(datetime.utcnow().timestamp())
     training, validation = data()
     model_instance = model()
-    train(model_instance, training, validation)
-
+    train(model_instance, training, validation, run_id)
+    return test(model, training, validation)
 
 if __name__ == '__main__':
     run()

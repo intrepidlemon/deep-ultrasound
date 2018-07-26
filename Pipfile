@@ -10,7 +10,6 @@ keras = {extras = ["visualize"]}
 pillow = "*"
 yapf = "*"
 pydot = "*"
-tensorflow-gpu = "*"
 
 [dev-packages]
 
