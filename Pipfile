@@ -10,6 +10,8 @@ keras = {extras = ["visualize"]}
 pillow = "*"
 yapf = "*"
 pydot = "*"
+scikit-learn = "*"
+seaborn = "*"
 
 [dev-packages]
 

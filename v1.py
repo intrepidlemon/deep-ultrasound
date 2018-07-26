@@ -34,7 +34,8 @@ def data():
         config.VALIDATION_DIR,
         target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE),
         batch_size=config.BATCH_SIZE,
-        class_mode='binary')
+        class_mode='binary',
+        shuffle=False)
 
     return train_generator, validation_generator
 
