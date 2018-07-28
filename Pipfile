@@ -12,6 +12,7 @@ yapf = "*"
 pydot = "*"
 scikit-learn = "*"
 seaborn = "*"
+matplotlib = "*"
 
 [dev-packages]
 
