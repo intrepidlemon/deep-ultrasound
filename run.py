@@ -18,6 +18,4 @@ if __name__ == '__main__':
     FLAGS, unparsed = parser.parse_known_args()
     model = models[FLAGS.model]
     while True:
-        clear()
-        sort()
         run(model)
