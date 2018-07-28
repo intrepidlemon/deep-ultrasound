@@ -118,7 +118,7 @@ def run(run_id=None):
     training, validation = data()
     model_instance = model()
     train(model_instance, training, validation, run_id)
-    return test(model, training, validation)
+    return test(model_instance, training, validation)
 
 if __name__ == '__main__':
     run()
