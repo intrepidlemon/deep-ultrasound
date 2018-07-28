@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from keras import applications
 from keras.preprocessing.image import ImageDataGenerator
 from keras import optimizers
@@ -33,7 +34,8 @@ def data():
         config.VALIDATION_DIR,
         target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE),
         batch_size=config.BATCH_SIZE,
-        class_mode='binary')
+        class_mode='binary',
+        shuffle=False)
 
     return train_generator, validation_generator
 
@@ -44,16 +46,19 @@ def model():
         include_top=False,
         input_shape=(config.IMAGE_SIZE, config.IMAGE_SIZE, 3),
     )
-    # fix convnet weights to imagenet
-    for layer in convnet.layers:
-        layer.trainable = False
 
     # custom Layers
     out = convnet.output
     out = Flatten()(out)
-    out = Dense(1024, activation="relu")(out)
+    out = Dense(256, activation="relu")(out)
     out = Dropout(0.5)(out)
-    out = Dense(1024, activation="relu")(out)
+    out = Dense(128, activation="relu")(out)
+    out = Dropout(0.5)(out)
+    out = Dense(64, activation="relu")(out)
+    out = Dropout(0.5)(out)
+    out = Dense(32, activation="relu")(out)
+    out = Dropout(0.5)(out)
+    out = Dense(16, activation="relu")(out)
     predictions = Dense(1, activation="sigmoid")(out)
 
     # creating the final model
@@ -68,10 +73,16 @@ def model():
     return model
 
 
-def train(model, training, validation):
+def train(model, training, validation, run_id):
     # save the model according to the conditions
     checkpoint = ModelCheckpoint(
-        "{}.h5".format(os.path.join(config.MODEL_DIR, MODEL_NAME)),
+        os.path.join(
+            config.MODEL_DIR,
+            "{}-{}.h5".format(
+                run_id,
+                MODEL_NAME,
+            ),
+        ),
         monitor='val_acc',
         verbose=1,
         save_best_only=True,
@@ -82,7 +93,7 @@ def train(model, training, validation):
     early = EarlyStopping(
         monitor='val_acc',
         min_delta=0,
-        patience=10,
+        patience=config.EPOCHS/10,
         verbose=1,
         mode='auto',
     )
@@ -96,12 +107,18 @@ def train(model, training, validation):
         callbacks=[checkpoint, early],
     )
 
+def test(model, train, validation):
+    validation_loss, validation_accuracy = model.evaluate_generator(validation)
+    train_loss, train_accuracy = model.evaluate_generator(train)
+    return train_loss, train_accuracy, validation_loss, validation_accuracy
 
-def run():
+def run(run_id=None):
+    if run_id is None:
+        run_id = int(datetime.utcnow().timestamp())
     training, validation = data()
     model_instance = model()
-    train(model_instance, training, validation)
-
+    train(model_instance, training, validation, run_id)
+    return test(model, training, validation)
 
 if __name__ == '__main__':
     run()
