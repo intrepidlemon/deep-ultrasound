@@ -6,6 +6,7 @@ from models import models
 from db import db, Result
 from uuid import uuid4
 
+from keras import backend as K
 
 def run(model):
     run_id = str(uuid4())
@@ -30,7 +31,13 @@ if __name__ == '__main__':
         type=str,
         required=True,
         help='which model to run (see models.py)')
+    parser.add_argument(
+        '--trials',
+        type=int,
+        default=1,
+        help='how many times to run')
     FLAGS, unparsed = parser.parse_known_args()
     model = models[FLAGS.model]
-    while True:
+    for _ in range(FLAGS.trials):
         run(model)
+        K.clear_session()
