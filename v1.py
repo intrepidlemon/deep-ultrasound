@@ -117,15 +117,6 @@ def test(model, train, validation):
     probabilities = list(evaluate.transform_binary_probabilities(results))
     labels = list(evaluate.get_labels(validation))
 
-    print({
-        "train_accuracy": float(train_accuracy),
-        "train_loss": float(train_loss),
-        "accuracy": float(accuracy),
-        "loss": float(loss),
-        "probabilities": probabilities,
-        "labels": labels,
-    })
-
     return {
         "train_accuracy": float(train_accuracy),
         "train_loss": float(train_loss),
