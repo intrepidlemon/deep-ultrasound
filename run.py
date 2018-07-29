@@ -42,7 +42,7 @@ def run(model):
     model.run(run_id)
     K.clear_session()
 
-    model_instance = evaluate.load(os.paths.join(config.MODEL_DIR), "{}-{}.h5".format(run_id, model.MODEL_NAME))
+    model_instance = evaluate.load(os.path.join(config.MODEL_DIR), "{}-{}.h5".format(run_id, model.MODEL_NAME))
 
     train, validation = model.data()
     train_data_stats = characterize_data(train)
