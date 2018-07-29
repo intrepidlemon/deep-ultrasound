@@ -7,6 +7,7 @@ class Config(object):
 
     BATCH_SIZE = 16
 
+    PATIENCE = 50
     EPOCHS = 500
 
     DEVELOPMENT = True

@@ -8,7 +8,10 @@ from keras.layers import Dropout, Flatten, Dense, GlobalAveragePooling2D
 from keras import backend as k
 from keras.callbacks import ModelCheckpoint, LearningRateScheduler, TensorBoard, EarlyStopping
 
+import numpy as np
+
 from config import config
+import evaluate
 
 MODEL_NAME = "v1"
 
@@ -93,7 +96,7 @@ def train(model, training, validation, run_id):
     early = EarlyStopping(
         monitor='val_acc',
         min_delta=0,
-        patience=config.EPOCHS/10,
+        patience=config.PATIENCE,
         verbose=1,
         mode='auto',
     )
@@ -108,9 +111,35 @@ def train(model, training, validation, run_id):
     )
 
 def test(model, train, validation):
-    validation_loss, validation_accuracy = model.evaluate_generator(validation)
+    loss, accuracy = model.evaluate_generator(validation)
     train_loss, train_accuracy = model.evaluate_generator(train)
-    return train_loss, train_accuracy, validation_loss, validation_accuracy
+    results = evaluate.get_results(model, validation)
+    probabilities = list(evaluate.transform_binary_probabilities(results))
+    labels = list(evaluate.get_labels(validation))
+
+    print({
+        "train_accuracy": float(train_accuracy),
+        "train_loss": float(train_loss),
+        "accuracy": float(accuracy),
+        "loss": float(loss),
+        "probabilities": probabilities,
+        "labels": labels,
+    })
+
+    return {
+        "train_accuracy": float(train_accuracy),
+        "train_loss": float(train_loss),
+        "accuracy": float(accuracy),
+        "loss": float(loss),
+        "probabilities": probabilities,
+        "labels": labels,
+    }
+
+def characterize_data(data):
+    unique, counts = np.unique(data.classes, return_counts=True)
+    index_to_count = dict(zip(unique, counts))
+    characterization = { c: index_to_count[data.class_indices[c]] for c in data.class_indices }
+    return characterization
 
 def run(run_id=None):
     if run_id is None:
@@ -118,7 +147,7 @@ def run(run_id=None):
     training, validation = data()
     model_instance = model()
     train(model_instance, training, validation, run_id)
-    return test(model_instance, training, validation)
+    return characterize_data(training), characterize_data(validation), test(model_instance, training, validation)
 
 if __name__ == '__main__':
     run()

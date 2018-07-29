@@ -6,3 +6,6 @@ data
 scratch.ipynb
 *.h5
 
+migrations
+
+output

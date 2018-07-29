@@ -13,6 +13,9 @@ pydot = "*"
 scikit-learn = "*"
 seaborn = "*"
 matplotlib = "*"
+flask = "*"
+flask-sqlalchemy = "*"
+flask-migrate = "*"
 
 [dev-packages]
 
