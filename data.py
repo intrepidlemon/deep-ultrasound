@@ -41,7 +41,15 @@ def all_features(valid_features=None):
     return out
 
 
-def sort(percent_split=0.2):
+def all_validation():
+    out = list()
+    with open(config.VALIDATION) as f:
+        reader = csv.DictReader(f, fieldnames=["id"])
+        for row in reader:
+            out.append(row['id'])
+        return out
+
+def sort_split(percent_split=0.2):
     files = all_identifiers(all_files())
     feat = all_features(['benign', 'malignant'])
 
@@ -66,8 +74,29 @@ def sort(percent_split=0.2):
         validation.extend(fs[:split])
         train.extend(fs[split:])
 
-    random.shuffle(identifiers)
-    split = int(len(identifiers) * percent_split)
+    for i in train:
+        if i in feat:
+            for f in files[i]:
+                copy(f, os.path.join(config.TRAIN_DIR, feat[i]))
+    for i in validation:
+        if i in feat:
+            for f in files[i]:
+                copy(f, os.path.join(config.VALIDATION_DIR, feat[i]))
+
+def sort_validation():
+    files = all_identifiers(all_files())
+    feat = all_features(['benign', 'malignant'])
+    validation_source = all_validation()
+
+    identifiers = list(files.keys())
+    identifiers = [i for i in identifiers if i in feat]
+    train = [i for i in identifiers if i not in validation_source]
+    validation = [i for i in identifiers if i in validation_source]
+
+    uniq_features = set(feat.values())
+    for f in uniq_features:
+        os.makedirs(os.path.join(config.TRAIN_DIR, f), exist_ok=True)
+        os.makedirs(os.path.join(config.VALIDATION_DIR, f), exist_ok=True)
 
     for i in train:
         if i in feat:
@@ -78,7 +107,9 @@ def sort(percent_split=0.2):
             for f in files[i]:
                 copy(f, os.path.join(config.VALIDATION_DIR, feat[i]))
 
-
 if __name__ == '__main__':
     clear()
-    sort()
+    if config.VALIDATION:
+        sort_validation()
+    else:
+        sort_split()
