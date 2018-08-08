@@ -25,7 +25,7 @@ def test(model, train, validation, test_data):
 
     test_results = evaluate.get_results(model, test_data)
     test_probabilities = list(evaluate.transform_binary_probabilities(test_results))
-    test_labels = list(evaluate.get_labels(test_data)
+    test_labels = list(evaluate.get_labels(test_data))
 
     return {
         "train_accuracy": float(train_accuracy),
