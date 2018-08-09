@@ -1,8 +1,7 @@
 """
 Same as V1, except:
-    - balance by class weighting
+    - class weighting
 """
-
 import os
 from datetime import datetime
 from keras import applications
@@ -12,7 +11,6 @@ from keras.models import Sequential, Model
 from keras.layers import Dropout, Flatten, Dense, GlobalAveragePooling2D
 from keras import backend as k
 from keras.callbacks import ModelCheckpoint, LearningRateScheduler, TensorBoard, EarlyStopping
-import numpy as np
 
 from config import config
 
@@ -43,7 +41,14 @@ def data():
         class_mode='binary',
         shuffle=False)
 
-    return train_generator, validation_generator
+    test_generator = test_datagen.flow_from_directory(
+        config.TEST_DIR,
+        target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE),
+        batch_size=config.BATCH_SIZE,
+        class_mode='binary',
+        shuffle=False)
+
+    return train_generator, validation_generator, test_generator
 
 
 def model():
@@ -121,7 +126,7 @@ def train(model, training, validation, run_id):
 def run(run_id=None):
     if run_id is None:
         run_id = int(datetime.utcnow().timestamp())
-    training, validation = data()
+    training, validation, _ = data()
     model_instance = model()
     train(model_instance, training, validation, run_id)
 
