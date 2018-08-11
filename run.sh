@@ -2,12 +2,12 @@
 cp features/balanced-test.csv data/test.csv
 cp features/all-proof.csv data/features.csv
 pipenv run python data.py --prefix free
-pipenv run python run.py --model v2 --trials 50 --description "complete-set-free"
+pipenv run python run.py --model v1 --trials 50 --description "complete-set-free"
 zip -r complete-set-free.zip data
 
 # everything with validation and test fixed images
 pipenv run python data.py --prefix fixed
-pipenv run python run.py --model v2 --trials 50 --description "complete-set-fixed"
+pipenv run python run.py --model v1 --trials 50 --description "complete-set-fixed"
 zip -r complete-set-fixed.zip data
 
 # c3-c4 free images
