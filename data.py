@@ -51,8 +51,8 @@ def all_test_set():
             out.append(row['id'])
         return out
 
-def sort(validation_split=0.2):
-    files = all_identifiers(all_files())
+def sort(validation_split=0.2, prefix="free"):
+    files = all_identifiers(all_files(prefix))
     feat = all_features(['benign', 'malignant'])
 
     # create directories
@@ -100,6 +100,17 @@ def sort(validation_split=0.2):
                 copy(f, os.path.join(config.VALIDATION_DIR, feat[i]))
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--split',
+        type=float,
+        default=0.2,
+        help='percent of samples to set aside for validation')
+    parser.add_argument(
+        '--prefix',
+        type=str,
+        help='prefix of images [fixed, free]')
+    FLAGS, unparsed = parser.parse_known_args()
     clear()
-    sort()
+    sort(FLAGS.split, FLAGS.prefix)
 
