@@ -9,9 +9,11 @@ from collections import defaultdict
 from config import config
 
 def clear():
+    rmtree(config.TEST_DIR, ignore_errors=True)
     rmtree(config.TRAIN_DIR, ignore_errors=True)
     rmtree(config.VALIDATION_DIR, ignore_errors=True)
     os.makedirs(config.DATA , exist_ok=True)
+    os.makedirs(config.TEST_DIR, exist_ok=True)
     os.makedirs(config.TRAIN_DIR, exist_ok=True)
     os.makedirs(config.VALIDATION_DIR, exist_ok=True)
 
