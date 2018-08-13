@@ -12,6 +12,7 @@ zip -r complete-set-fixed.zip data
 
 # c3-c4 free images
 rm data/test.csv
+touch data/test.csv
 cp features/c3-c4-proof.csv data/features.csv
 pipenv run python data.py --prefix free
 pipenv run python run.py --model v2 --trials 100 --description "c3-c4-free"
