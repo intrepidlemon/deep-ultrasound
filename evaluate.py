@@ -13,6 +13,12 @@ def load(filepath):
 def get_results(model, data):
     return model.predict_generator(data)
 
+def clean_filename(filename):
+    return "-".join(filename.split("-")[1:])
+
+def get_expert_results(expert, data):
+    return [expert[clean_filename(f)] for f in data.filenames]
+
 def transform_binary_probabilities(results):
     probabilities = results.flatten()
     return probabilities
@@ -87,7 +93,9 @@ def calculate_confusion_matrix_stats(data, results):
     FNR = FN/(TP+FN)
     # False discovery rate
     FDR = FP/(TP+FP)
+    Acc = (TN + TP)/(TN + TP + FN + FP)
     return {
+        "Acc": Acc,
         "TP": TP,
         "TN": TN,
         "FP": FP,
