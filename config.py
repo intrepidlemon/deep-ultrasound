@@ -22,7 +22,7 @@ class Config(object):
     TEST_DIR = os.path.join(DATA, "test")
     VALIDATION_DIR = os.path.join(DATA, "validation")
     FEATURES = os.path.join(DATA, "features.csv")
-    TEST_SET = os.path.join(DATA, "test.csv")
+    TEST_SET = None
 
     OUTPUT = "output"
     DB_URL = "sqlite:///{}/results.db".format(OUTPUT)

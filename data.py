@@ -93,7 +93,6 @@ def describe(prefix="free"):
         files_category_count,
         )
 
-
 def sort(validation_split=0.2, prefix="free"):
     files = all_identifiers(all_files(prefix))
     feat, _, _ = all_features(['benign', 'malignant'])
