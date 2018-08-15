@@ -69,15 +69,30 @@ def describe(prefix="free"):
     identifiers = list(files.keys())
     identifiers = [i for i in identifiers if i in feat]
 
-    imaging_count = defaultdict(lambda: 0)
-    category_count = defaultdict(lambda: 0)
-    feat_count = defaultdict(lambda: 0)
+    identifier_imaging_count = defaultdict(lambda: 0)
+    identifier_category_count = defaultdict(lambda: 0)
+    identifier_feat_count = defaultdict(lambda: 0)
+    files_imaging_count = defaultdict(lambda: 0)
+    files_category_count = defaultdict(lambda: 0)
+    files_feat_count = defaultdict(lambda: 0)
+
 
     for i in identifiers:
-        imaging_count[imag[i]] += 1
-        category_count[category[i]] += 1
-        feat_count[feat[i]] += 1
-    return feat_count, imaging_count, category_count
+        identifier_imaging_count[imag[i]] += 1
+        identifier_category_count[category[i]] += 1
+        identifier_feat_count[feat[i]] += 1
+        files_imaging_count[imag[i]] += len(files[i])
+        files_category_count[category[i]] += len(files[i])
+        files_feat_count[feat[i]] += len(files[i])
+    return (
+        identifier_feat_count,
+        identifier_imaging_count,
+        identifier_category_count,
+        files_feat_count,
+        files_imaging_count,
+        files_category_count,
+        )
+
 
 def sort(validation_split=0.2, prefix="free"):
     files = all_identifiers(all_files(prefix))
