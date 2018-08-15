@@ -71,11 +71,13 @@ def describe(prefix="free"):
 
     imaging_count = defaultdict(lambda: 0)
     category_count = defaultdict(lambda: 0)
+    feat_count = defaultdict(lambda: 0)
 
     for i in identifiers:
         imaging_count[imag[i]] += 1
         category_count[category[i]] += 1
-    return imaging_count, category_count
+        feat_count[feat[i]] += 1
+    return feat_count, imaging_count, category_count
 
 def sort(validation_split=0.2, prefix="free"):
     files = all_identifiers(all_files(prefix))
