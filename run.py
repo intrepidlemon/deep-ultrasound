@@ -17,15 +17,20 @@ def test(model, train, validation, test_data):
 
     loss, accuracy = model.evaluate_generator(validation)
     train_loss, train_accuracy = model.evaluate_generator(train)
-    test_loss, test_accuracy = model.evaluate_generator(test_data)
 
     results = evaluate.get_results(model, validation)
     probabilities = list(evaluate.transform_binary_probabilities(results))
     labels = list(evaluate.get_labels(validation))
 
-    test_results = evaluate.get_results(model, test_data)
-    test_probabilities = list(evaluate.transform_binary_probabilities(test_results))
-    test_labels = list(evaluate.get_labels(test_data))
+    test_loss = 0
+    test_accuracy = 0
+    test_probabilities = []
+    test_labels = []
+    if test_data.classes != 0:
+        test_loss, test_accuracy = model.evaluate_generator(test_data)
+        test_results = evaluate.get_results(model, test_data)
+        test_probabilities = list(evaluate.transform_binary_probabilities(test_results))
+        test_labels = list(evaluate.get_labels(test_data))
 
     return {
         "train_accuracy": float(train_accuracy),
@@ -41,6 +46,8 @@ def test(model, train, validation, test_data):
     }
 
 def characterize_data(data):
+    if len(data.classes == 0):
+        return dict()
     unique, counts = np.unique(data.classes, return_counts=True)
     index_to_count = dict(zip(unique, counts))
     characterization = { c: index_to_count[data.class_indices[c]] for c in data.class_indices }
