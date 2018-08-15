@@ -16,8 +16,8 @@ def get_results(model, data):
 def clean_filename(filename):
     return "-".join(filename.split("-")[1:])
 
-def get_expert_results(expert, data):
-    return [expert[clean_filename(f)] for f in data.filenames]
+def get_expert_results(expert, data, expert_key):
+    return [data.class_indices[expert[clean_filename(f)][expert_key]] for f in data.filenames]
 
 def transform_binary_probabilities(results):
     probabilities = results.flatten()
