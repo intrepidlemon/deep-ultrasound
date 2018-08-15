@@ -69,8 +69,8 @@ def describe(prefix="free"):
     identifiers = list(files.keys())
     identifiers = [i for i in identifiers if i in feat]
 
-    imaging_count = defaultdict(lambda x: 0)
-    category_count = defaultdict(lambda x: 0)
+    imaging_count = defaultdict(lambda: 0)
+    category_count = defaultdict(lambda: 0)
 
     for i in identifiers:
         imaging_count[imag[i]] += 1
