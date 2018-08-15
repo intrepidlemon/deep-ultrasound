@@ -46,7 +46,7 @@ def test(model, train, validation, test_data):
     }
 
 def characterize_data(data):
-    if len(data.classes == 0):
+    if len(data.classes) == 0:
         return dict()
     unique, counts = np.unique(data.classes, return_counts=True)
     index_to_count = dict(zip(unique, counts))
