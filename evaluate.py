@@ -17,7 +17,13 @@ def clean_filename(filename):
     return "-".join(filename.split("-")[1:])
 
 def get_expert_results(expert, data, expert_key):
-    return [data.class_indices[expert[clean_filename(f)][expert_key]] for f in data.filenames]
+    results = []
+    for f in data.filenames:
+        try:
+            results.append(data.class_indices[expert[clean_filename(f)][expert_key]] )
+        except Exception as e:
+            print("error with {}: {}".format(f, e))
+    return results
 
 def transform_binary_probabilities(results):
     probabilities = results.flatten()
