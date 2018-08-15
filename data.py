@@ -8,6 +8,7 @@ from collections import defaultdict
 
 from config import config
 
+
 def clear():
     rmtree(config.TEST_DIR, ignore_errors=True)
     rmtree(config.TRAIN_DIR, ignore_errors=True)
@@ -33,15 +34,18 @@ def all_identifiers(files):
 
 
 def all_features(valid_features=None):
-    out = dict()
+    feature = dict()
+    imaging = dict()
+    category = dict()
     with open(config.FEATURES) as f:
-        reader = csv.DictReader(f, fieldnames=["id", "feature"])
+        reader = csv.DictReader(f, fieldnames=["id", "feature", "imaging", "category"])
         for row in reader:
+            imaging[row["id"]] = row["imaging"]
+            category[row["id"]] = row["category"]
             if valid_features is not None and row["feature"] not in valid_features:
                 continue
-            out[row["id"]] = row["feature"]
-    return out
-
+            feature[row["id"]] = row["feature"]
+    return feature, imaging, category
 
 def all_test_set():
     out = list()
@@ -51,9 +55,31 @@ def all_test_set():
             out.append(row['id'])
         return out
 
+def describe():
+    files = all_identifiers(all_files(prefix))
+    feat, imag, category = all_features(['benign', 'malignant'])
+
+    # create directories
+    uniq_features = set(feat.values())
+    for f in uniq_features:
+        os.makedirs(os.path.join(config.TRAIN_DIR, f), exist_ok=True)
+        os.makedirs(os.path.join(config.VALIDATION_DIR, f), exist_ok=True)
+        os.makedirs(os.path.join(config.TEST_DIR, f), exist_ok=True)
+
+    identifiers = list(files.keys())
+    identifiers = [i for i in identifiers if i in feat]
+
+    imaging_count = defaultdict(0)
+    category_count = defaultdict(0)
+
+    for i in identifiers:
+        imaging_count[imag[i]] += 1
+        category_count[category[i]] += 1
+    return imaging_count, category_count
+
 def sort(validation_split=0.2, prefix="free"):
     files = all_identifiers(all_files(prefix))
-    feat = all_features(['benign', 'malignant'])
+    feat, _, _ = all_features(['benign', 'malignant'])
 
     # create directories
     uniq_features = set(feat.values())
