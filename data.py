@@ -55,7 +55,7 @@ def all_test_set():
             out.append(row['id'])
         return out
 
-def describe():
+def describe(prefix="free"):
     files = all_identifiers(all_files(prefix))
     feat, imag, category = all_features(['benign', 'malignant'])
 
