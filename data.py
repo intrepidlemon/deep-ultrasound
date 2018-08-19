@@ -3,6 +3,7 @@ import glob
 import argparse
 import random
 import csv
+import pandas
 from shutil import copy, rmtree
 from collections import defaultdict
 
@@ -75,7 +76,7 @@ def describe(prefix="free"):
     files_imaging_count = defaultdict(lambda: 0)
     files_category_count = defaultdict(lambda: 0)
     files_feat_count = defaultdict(lambda: 0)
-
+    identifier_list = list()
 
     for i in identifiers:
         identifier_imaging_count[imag[i]] += 1
@@ -84,14 +85,18 @@ def describe(prefix="free"):
         files_imaging_count[imag[i]] += len(files[i])
         files_category_count[category[i]] += len(files[i])
         files_feat_count[feat[i]] += len(files[i])
-    return (
-        identifier_feat_count,
-        identifier_imaging_count,
-        identifier_category_count,
-        files_feat_count,
-        files_imaging_count,
-        files_category_count,
-        )
+        identifier_list.append({
+            "identifier": i,
+            "files": len(files[i]),
+            "category": category[i],
+            "feat": feat[i],
+            "imag": imag[i],
+        })
+    return {
+        "identifier": (identifier_feat_count, identifier_imaging_count, identifier_category_count),
+        "files": (files_feat_count, files_imaging_count, files_category_count),
+        "dataframe": pandas.DataFrame(identifier_list).set_index("identifier"),
+    }
 
 def sort(validation_split=0.2, prefix="free"):
     files = all_identifiers(all_files(prefix))
