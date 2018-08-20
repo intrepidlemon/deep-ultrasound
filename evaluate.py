@@ -184,6 +184,9 @@ def plot_expert_confusion(expert_file, dataset):
 def plot_grad_cam(image_file, model, layer, filter_idx=None):
     image = load_img(image_file, target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE))
     grad = visualize_cam(model, find_layer_idx(model, layer), filter_idx, normalize(image), backprop_modifier="relu")
-    plt.imshow(overlay(grad, image))
-    plt.axis('off')
+    f, ax = plt.subplots(1, 2)
+    ax[0].imshow(overlay(grad, image))
+    ax[0].axis('off')
+    ax[1].imshow(image)
+    ax[1].axis('off')
     plt.show()
