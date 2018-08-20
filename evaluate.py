@@ -24,6 +24,7 @@ def get_expert_results(expert, data, expert_key):
         try:
             results.append(data.class_indices[expert[clean_filename(f)][expert_key]] )
         except Exception as e:
+            results.append(0)
             print("error with {}: {}".format(f, e))
     return results
 
