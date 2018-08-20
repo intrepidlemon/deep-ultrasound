@@ -159,3 +159,9 @@ def plot_tsne(model, layer_name, data, labels, perplexity=5):
         "label": labels,
     })
     sns.scatterplot(x="x", y="y", data=pd, hue="label")
+
+def plot_expert(expert_file, dataset):
+    with open(expert_file) as o:
+        results = np.array(get_expert_results(expert_1, validation, "malignantBenign"))
+        plot_confusion_matrix(dataset, results)
+        return calculate_confusion_matrix_stats(dataset, results)
