@@ -163,7 +163,7 @@ def plot_tsne(model, layer_name, data, labels, perplexity=5):
 
 def plot_expert(expert_file, dataset):
     with open(expert_file) as o:
-        data = json.load(o)
-        results = np.array(get_expert_results(data, validation, "malignantBenign"))
+        expert_data = json.load(o)
+        results = np.array(get_expert_results(expert_data, dataset, "malignantBenign"))
         plot_confusion_matrix(dataset, results)
         return calculate_confusion_matrix_stats(dataset, results)
