@@ -1,6 +1,7 @@
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
+import json
 
 from keras.models import load_model, Model
 from sklearn.metrics import auc, precision_recall_curve, roc_curve, confusion_matrix
@@ -162,6 +163,7 @@ def plot_tsne(model, layer_name, data, labels, perplexity=5):
 
 def plot_expert(expert_file, dataset):
     with open(expert_file) as o:
-        results = np.array(get_expert_results(expert_1, validation, "malignantBenign"))
+        data = json.load(o)
+        results = np.array(get_expert_results(data, validation, "malignantBenign"))
         plot_confusion_matrix(dataset, results)
         return calculate_confusion_matrix_stats(dataset, results)
