@@ -3,10 +3,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import json
 
+from vis.visualization import visualize_cam, overlay
+from vis.utils.utils import load_img, normalize, find_layer_idx
 from keras.models import load_model, Model
 from sklearn.metrics import auc, precision_recall_curve, roc_curve, confusion_matrix
 from sklearn import manifold
 import pandas
+from config import config
 
 sns.set()
 
@@ -168,6 +171,8 @@ def plot_tsne(model, layer_name, data, labels, perplexity=5):
         "label": labels,
     })
     sns.scatterplot(x="x", y="y", data=pd, hue="label")
+    plt.axis('off')
+    plt.show()
 
 def plot_expert_confusion(expert_file, dataset):
     with open(expert_file) as o:
@@ -176,5 +181,9 @@ def plot_expert_confusion(expert_file, dataset):
         plot_confusion_matrix(dataset, results)
         return calculate_confusion_matrix_stats(dataset, results)
 
-def plot_grad_cam(image, model, layer, filter_idx):
-    pass
+def plot_grad_cam(image_file, model, layer, filter_idx):
+    image = load_img(image_file, target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE))
+    grad = visualize_cam(model, find_layer_idx(model, layer), None, normalize(image), backprop_modifier="relu")
+    plt.imshow(overlay(grad, image))
+    plt.axis('off')
+    plt.show()
