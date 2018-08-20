@@ -2,8 +2,9 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 
-from keras.models import load_model
+from keras.models import load_model, Model
 from sklearn.metrics import auc, precision_recall_curve, roc_curve, confusion_matrix
+from sklearn import manifold
 
 sns.set()
 
@@ -142,3 +143,14 @@ def plot_confusion_matrix(data, results):
             xticklabels=labels,
             )
 
+def plot_tsne(model, layer_name, data, labels, perplexity=5):
+    intermediate_layer_model = Model(inputs=model.input,
+                                 outputs=model.get_layer(layer_name).output)
+    intermediate_output = intermediate_layer_model.predict_generator(data)
+    embedding = manifold.TSNE(perplexity=perplexity).fit_transform(intermediate_output)
+    pd = pandas.DataFrame.from_dict({
+        "x": [d[0] for d in embedding],
+        "y": [d[1] for d in embedding],
+        "labels": labels,
+    })
+    seaborn.scatterplot(x="x", y="y", data=pd, hue="label")
