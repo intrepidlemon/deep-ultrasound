@@ -132,10 +132,18 @@ def plot_precision_recall(data, results):
     precision, recall = calculate_precision_recall_curve(data, results)
     plt.step(recall, precision)
 
-def plot_roc_curve(data, results):
+def plot_roc_curve(data, results, experts=[]):
+    if len(experts) > 0:
+        experts_data = pandas.DataFrame([{
+            "name": e["name"],
+            "FPR": e["FPR"][0],
+            "TPR": e["TPR"][0],
+        } for e in experts ])
+        sns.scatterplot(data=experts_data, x="FPR", y="TPR", hue="name")
     fpr, tpr = calculate_roc_curve(data, results)
     plt.plot([0, 1], [0, 1], linestyle='--')
     plt.plot(fpr, tpr)
+    plt.show()
 
 def plot_confusion_matrix(data, results):
     confusion_matrix = calculate_confusion_matrix(data, results)
@@ -161,7 +169,7 @@ def plot_tsne(model, layer_name, data, labels, perplexity=5):
     })
     sns.scatterplot(x="x", y="y", data=pd, hue="label")
 
-def plot_expert(expert_file, dataset):
+def plot_expert_confusion(expert_file, dataset):
     with open(expert_file) as o:
         expert_data = json.load(o)
         results = np.array(get_expert_results(expert_data, dataset, "malignantBenign"))
