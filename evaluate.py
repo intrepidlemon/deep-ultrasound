@@ -5,6 +5,7 @@ import numpy as np
 from keras.models import load_model, Model
 from sklearn.metrics import auc, precision_recall_curve, roc_curve, confusion_matrix
 from sklearn import manifold
+import pandas
 
 sns.set()
 
@@ -153,4 +154,4 @@ def plot_tsne(model, layer_name, data, labels, perplexity=5):
         "y": [d[1] for d in embedding],
         "labels": labels,
     })
-    seaborn.scatterplot(x="x", y="y", data=pd, hue="label")
+    sns.scatterplot(x="x", y="y", data=pd, hue="label")
