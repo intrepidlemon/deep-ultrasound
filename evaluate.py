@@ -18,6 +18,9 @@ def get_results(model, data):
 def clean_filename(filename):
     return "-".join(filename.split("-")[1:])
 
+def accession_from_filename(filename):
+    return filename.split("-")[1]
+
 def get_expert_results(expert, data, expert_key):
     results = []
     for f in data.filenames:
