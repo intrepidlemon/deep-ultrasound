@@ -153,6 +153,6 @@ def plot_tsne(model, layer_name, data, labels, perplexity=5):
     pd = pandas.DataFrame.from_dict({
         "x": [d[0] for d in embedding],
         "y": [d[1] for d in embedding],
-        "labels": labels,
+        "label": labels,
     })
     sns.scatterplot(x="x", y="y", data=pd, hue="label")
