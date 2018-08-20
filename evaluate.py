@@ -175,3 +175,6 @@ def plot_expert_confusion(expert_file, dataset):
         results = np.array(get_expert_results(expert_data, dataset, "malignantBenign"))
         plot_confusion_matrix(dataset, results)
         return calculate_confusion_matrix_stats(dataset, results)
+
+def plot_grad_cam(image, model, layer, filter_idx):
+    pass
