@@ -170,7 +170,7 @@ def plot_tsne(model, layer_name, data, labels, perplexity=5):
         "y": [d[1] for d in embedding],
         "label": labels,
     })
-    sns.scatterplot(x="x", y="y", data=pd, hue="label")
+    sns.scatterplot(x="x", y="y", data=pd, hue="label", hue_order=np.unique(labels))
     plt.axis('off')
     plt.show()
 
