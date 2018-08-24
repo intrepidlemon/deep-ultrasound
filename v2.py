@@ -18,7 +18,7 @@ from config import config
 MODEL_NAME = "v2"
 
 
-def data():
+def data(shuffle_train=True):
     train_datagen = ImageDataGenerator(
         rescale=1. / 255,
         shear_range=0.2,
@@ -34,6 +34,14 @@ def data():
         target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE),
         batch_size=config.BATCH_SIZE,
         class_mode='binary')
+
+    if not shuffle_train:
+        train_generator = test_datagen.flow_from_directory(
+            config.TRAIN_DIR,
+            target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE),
+            batch_size=config.BATCH_SIZE,
+            class_mode='binary',
+            shuffle=False)
 
     validation_generator = test_datagen.flow_from_directory(
         config.VALIDATION_DIR,

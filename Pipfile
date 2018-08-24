@@ -16,6 +16,7 @@ matplotlib = "*"
 flask = "*"
 flask-sqlalchemy = "*"
 flask-migrate = "*"
+keras-vis = "*"
 
 [dev-packages]
 
