@@ -11,6 +11,8 @@ from keras import backend as K
 import numpy as np
 import evaluate
 
+from data import data
+
 from config import config
 
 def test(model, train, validation, test_data):
@@ -64,7 +66,7 @@ def run(model, description):
         "{}-{}.h5".format(run_id, model.MODEL_NAME),
         ))
 
-    train, validation, test_data = model.data()
+    train, validation, test_data = data()
     train_data_stats = characterize_data(train)
     validation_data_stats = characterize_data(validation)
     test_data_stats = characterize_data(test_data)

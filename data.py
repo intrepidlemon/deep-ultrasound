@@ -6,9 +6,50 @@ import csv
 import pandas
 from shutil import copy, rmtree
 from collections import defaultdict
+from keras.preprocessing.image import ImageDataGenerator
 
 from config import config
 
+def data(shuffle_train=True, train_dir=config.TRAIN_DIR, validation_dir=config.VALIDATION_DIR, test_dir=config.TEST_DIR):
+    train_datagen = ImageDataGenerator(
+        rescale=1. / 255,
+        shear_range=0.2,
+        zoom_range=0.2,
+        horizontal_flip=True,
+        vertical_flip=True,
+    )
+
+    test_datagen = ImageDataGenerator(rescale=1. / 255)
+
+    train_generator = train_datagen.flow_from_directory(
+        train_dir,
+        target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE),
+        batch_size=config.BATCH_SIZE,
+        class_mode='binary')
+
+    if not shuffle_train:
+        train_generator = test_datagen.flow_from_directory(
+            train_dir,
+            target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE),
+            batch_size=config.BATCH_SIZE,
+            class_mode='binary',
+            shuffle=False)
+
+    validation_generator = test_datagen.flow_from_directory(
+        validation_dir,
+        target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE),
+        batch_size=config.BATCH_SIZE,
+        class_mode='binary',
+        shuffle=False)
+
+    test_generator = test_datagen.flow_from_directory(
+        test_dir,
+        target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE),
+        batch_size=config.BATCH_SIZE,
+        class_mode='binary',
+        shuffle=False)
+
+    return train_generator, validation_generator, test_generator
 
 def clear():
     rmtree(config.TEST_DIR, ignore_errors=True)
