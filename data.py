@@ -62,8 +62,8 @@ def clear():
     os.makedirs(config.VALIDATION_DIR, exist_ok=True)
 
 
-def all_files(prefix="free", directory=config.RAW_DIR):
-    return glob.glob(os.path.join(directory, "{}-*".format(prefix)))
+def all_files(prefix="free", raw=config.RAW_DIR):
+    return glob.glob(os.path.join(raw, "{}-*".format(prefix)))
 
 
 def all_identifiers(files):
@@ -98,8 +98,8 @@ def all_test_set():
             out.append(row['id'])
         return out
 
-def describe(prefix="free", directory=config.RAW_DIR, features=config.FEATURES):
-    files = all_identifiers(all_files(prefix, directory))
+def describe(prefix="free", raw=config.RAW_DIR, features=config.FEATURES):
+    files = all_identifiers(all_files(prefix, raw))
     feat, imag, category = all_features(['benign', 'malignant'], features)
 
     identifiers = list(files.keys())
@@ -133,8 +133,8 @@ def describe(prefix="free", directory=config.RAW_DIR, features=config.FEATURES):
         "dataframe": pandas.DataFrame(identifier_list).set_index("identifier"),
     }
 
-def print_describe(prefix="free", directory=config.RAW_DIR, features=config.FEATURES):
-    identifier, files, df = describe(prefix, directory, features).values()
+def print_describe(prefix="free", raw=config.RAW_DIR, features=config.FEATURES):
+    identifier, files, df = describe(prefix, raw, features).values()
     columns = ["feat", "imag"]
     for category in np.unique(df.category):
         print("category:", category)
