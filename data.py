@@ -61,8 +61,8 @@ def clear():
     os.makedirs(config.VALIDATION_DIR, exist_ok=True)
 
 
-def all_files(prefix="free"):
-    return glob.glob(os.path.join(config.RAW_DIR, "{}-*".format(prefix)))
+def all_files(prefix="free", directory=config.RAW_DIR):
+    return glob.glob(os.path.join(directory, "{}-*".format(prefix)))
 
 
 def all_identifiers(files):
@@ -75,11 +75,11 @@ def all_identifiers(files):
     return out
 
 
-def all_features(valid_features=None):
+def all_features(valid_features=None, features=config.FEATURES):
     feature = dict()
     imaging = dict()
     category = dict()
-    with open(config.FEATURES) as f:
+    with open(features) as f:
         reader = csv.DictReader(f, fieldnames=["id", "feature", "imaging", "category"])
         for row in reader:
             imaging[row["id"]] = row["imaging"]
@@ -97,16 +97,9 @@ def all_test_set():
             out.append(row['id'])
         return out
 
-def describe(prefix="free"):
-    files = all_identifiers(all_files(prefix))
-    feat, imag, category = all_features(['benign', 'malignant'])
-
-    # create directories
-    uniq_features = set(feat.values())
-    for f in uniq_features:
-        os.makedirs(os.path.join(config.TRAIN_DIR, f), exist_ok=True)
-        os.makedirs(os.path.join(config.VALIDATION_DIR, f), exist_ok=True)
-        os.makedirs(os.path.join(config.TEST_DIR, f), exist_ok=True)
+def describe(prefix="free", directory=config.RAW_DIR, features=config.FEATURES):
+    files = all_identifiers(all_files(prefix, directory))
+    feat, imag, category = all_features(['benign', 'malignant'], features)
 
     identifiers = list(files.keys())
     identifiers = [i for i in identifiers if i in feat]
