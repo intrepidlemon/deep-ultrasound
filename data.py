@@ -4,6 +4,7 @@ import argparse
 import random
 import csv
 import pandas
+import numpy as np
 from shutil import copy, rmtree
 from collections import defaultdict
 from keras.preprocessing.image import ImageDataGenerator
@@ -131,6 +132,18 @@ def describe(prefix="free", directory=config.RAW_DIR, features=config.FEATURES):
         "files": (files_feat_count, files_imaging_count, files_category_count),
         "dataframe": pandas.DataFrame(identifier_list).set_index("identifier"),
     }
+
+def print_describe(prefix="free", directory=config.RAW_DIR, features=config.FEATURES):
+    identifier, files, df = describe(prefix, directory, features).values()
+    columns = ["feat", "imag"]
+    for category in np.unique(df.category):
+        print("category:", category)
+        print("\tcount:", len(df[df.category==category]))
+        print("\tnumber lesions:", df[df.category==category].files.sum())
+        for column in columns:
+            print("\tcolumn:", column)
+            values, counts = np.unique(df[df.category==category][column], return_counts=True)
+            print("\t\t", dict(zip(values, counts)))
 
 def sort(validation_split=0.2, prefix="free"):
     files = all_identifiers(all_files(prefix))
