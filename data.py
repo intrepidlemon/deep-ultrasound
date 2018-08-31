@@ -11,6 +11,16 @@ from keras.preprocessing.image import ImageDataGenerator
 
 from config import config
 
+def load_single(directory=config.VALIDATION_DIR):
+    datagen = ImageDataGenerator(rescale=1. / 255)
+    generator = datagen.flow_from_directory(
+        directory,
+        target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE),
+        batch_size=config.BATCH_SIZE,
+        class_mode='binary',
+        shuffle=False)
+    return generator
+
 def data(shuffle_train=True, train_dir=config.TRAIN_DIR, validation_dir=config.VALIDATION_DIR, test_dir=config.TEST_DIR):
     train_datagen = ImageDataGenerator(
         rescale=1. / 255,
