@@ -178,7 +178,7 @@ def plot_expert_confusion(expert_file, dataset):
         expert_data = json.load(o)
         results = np.array(get_expert_results(expert_data, dataset, "malignantBenign"))
         plot_confusion_matrix(dataset, results)
-        return calculate_confusion_matrix_stats(dataset, results)
+        return calculate_confusion_matrix_stats(get_labels(dataset), results)
 
 def plot_grad_cam(image_file, model, layer, filter_idx=None):
     image = load_img(image_file, target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE))
