@@ -19,3 +19,5 @@ zip -r c3-c4-set-free-$(date +%Y%m%d%H%M%S).zip data
 pipenv run python data.py --prefix fixed
 pipenv run python run.py --model v2 --trials 100 --description "c3-c4-fixed-final-1"
 zip -r c3-c4-set-fixed-$(date +%Y%m%d%H%M%S).zip data
+
+bash notify.sh
