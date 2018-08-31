@@ -10,3 +10,5 @@ scratch.ipynb
 migrations
 
 output
+
+pushover-secret.sh

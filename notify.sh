@@ -1,3 +1,4 @@
+source pushover-secret.sh
 curl -s \
   --form-string "token=$PUSHOVER_TOKEN" \
   --form-string "user=$PUSHOVER_USER" \
