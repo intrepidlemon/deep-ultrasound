@@ -50,46 +50,42 @@ def calculate_accuracy_loss(model, data):
     loss, accuracy = model.evaluate_generator(data)
     return loss, accuracy
 
-def calculate_precision_recall_curve(data, results):
+def calculate_precision_recall_curve(labels, results):
     """
     restricted to binary classifications
     returns precision, recall, thresholds
     """
-    labels = get_labels(data)
     probabilities = transform_binary_probabilities(results)
     precision, recall, _ = precision_recall_curve(labels, probabilities)
     return precision, recall
 
-def calculate_average_precision(data, results):
+def calculate_average_precision(labels, results):
     """
     restricted to binary classifications
     returns
     """
-    labels = get_labels(data)
     probabilities = transform_binary_probabilities(results)
     average_precision = average_precision_score(labels, probabilities)
     return average_precision
 
-def calculate_roc_curve(data, results):
+def calculate_roc_curve(labels, results):
     """
     restricted to binary classifications
     returns false positive rate, true positive rate
     """
-    labels = get_labels(data)
     probabilities = transform_binary_probabilities(results)
     fpr, tpr , _ = roc_curve(labels, probabilities)
     return fpr, tpr
 
-def calculate_confusion_matrix(data, results):
+def calculate_confusion_matrix(labels, results):
     """
     returns a confusion matrix
     """
-    labels = get_labels(data)
     predictions = transform_binary_predictions(results)
     return confusion_matrix(labels, predictions)
 
-def calculate_confusion_matrix_stats(data, results):
-    confusion_matrix = calculate_confusion_matrix(data, results)
+def calculate_confusion_matrix_stats(labels, results):
+    confusion_matrix = calculate_confusion_matrix(labels, results)
     FP = confusion_matrix.sum(axis=0) - np.diag(confusion_matrix)
     FN = confusion_matrix.sum(axis=1) - np.diag(confusion_matrix)
     TP = np.diag(confusion_matrix)
@@ -127,15 +123,15 @@ def calculate_confusion_matrix_stats(data, results):
         "GM": np.sqrt(TPR*TNR),
     }
 
-def calculate_pr_auc(data, results):
-    precision, recall = calculate_precision_recall_curve(data, results)
+def calculate_pr_auc(labels, results):
+    precision, recall = calculate_precision_recall_curve(labels, results)
     return auc(recall, precision)
 
-def plot_precision_recall(data, results):
-    precision, recall = calculate_precision_recall_curve(data, results)
+def plot_precision_recall(labels, results):
+    precision, recall = calculate_precision_recall_curve(labels, results)
     plt.step(recall, precision)
 
-def plot_roc_curve(data, results, experts=[]):
+def plot_roc_curve(labels, results, experts=[]):
     if len(experts) > 0:
         experts_data = pandas.DataFrame([{
             "name": e["name"],
@@ -143,13 +139,13 @@ def plot_roc_curve(data, results, experts=[]):
             "TPR": e["TPR"][0],
         } for e in experts ])
         sns.scatterplot(data=experts_data, x="FPR", y="TPR", hue="name")
-    fpr, tpr = calculate_roc_curve(data, results)
+    fpr, tpr = calculate_roc_curve(labels, results)
     plt.plot([0, 1], [0, 1], linestyle='--')
     plt.plot(fpr, tpr)
     plt.show()
 
 def plot_confusion_matrix(data, results):
-    confusion_matrix = calculate_confusion_matrix(data, results)
+    confusion_matrix = calculate_confusion_matrix(get_labels(data), results)
     labels = list(data.class_indices.keys())
     labels.sort()
     sns.heatmap(
