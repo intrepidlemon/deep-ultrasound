@@ -159,6 +159,9 @@ def plot_confusion_matrix(data, results):
             yticklabels=labels,
             xticklabels=labels,
             )
+    plt.xlabel('prediction')
+    plt.ylabel('standard')
+    plt.show()
 
 def plot_tsne(model, layer_name, data, labels, perplexity=5):
     intermediate_layer_model = Model(inputs=model.input,
