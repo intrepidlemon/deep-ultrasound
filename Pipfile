@@ -17,6 +17,7 @@ flask = "*"
 flask-sqlalchemy = "*"
 flask-migrate = "*"
 keras-vis = "*"
+papermill = "*"
 
 [dev-packages]
 
