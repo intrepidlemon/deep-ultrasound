@@ -1,38 +1,4 @@
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-from datetime import datetime
-import json
-import numpy
-
-from app import app
-
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
-
-def default(o):
-    if isinstance(o, numpy.int64): return int(o)
-    if isinstance(o, numpy.int32): return int(o)
-    if isinstance(o, numpy.float64): return float(o)
-    if isinstance(o, numpy.float32): return float(o)
-    raise TypeError
-
-class Result(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    uuid = db.Column(db.String)
-    created_on = db.Column(db.DateTime, default=datetime.utcnow)
-
-    model = db.Column(db.String)
-    train_data_stats = db.Column(db.String)
-    validation_data_stats = db.Column(db.String)
-    test_data_stats = db.Column(db.String)
-
-    train_accuracy = db.Column(db.Float)
-    train_loss = db.Column(db.Float)
-    accuracy = db.Column(db.Float)
-    loss = db.Column(db.Float)
-    test_accuracy = db.Column(db.Float)
-    test_loss = db.Column(db.Float)
-
     probabilities = db.Column(db.String)
     labels = db.Column(db.String)
     test_probabilities = db.Column(db.String)
