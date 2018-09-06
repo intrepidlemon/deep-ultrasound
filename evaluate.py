@@ -176,7 +176,7 @@ def get_expert_results(expert_file, files, expert_key="malignantBenign"):
         return results
 
 def plot_expert_confusion(expert_file, dataset):
-    results = np.array([dataset.indices[i] for i in get_expert_results(expert_file, dataset.filenames)])
+    results = np.array([dataset.class_indices[i] for i in get_expert_results(expert_file, dataset.filenames)])
     plot_confusion_matrix(dataset, results)
     return calculate_confusion_matrix_stats(get_labels(dataset), results)
 
