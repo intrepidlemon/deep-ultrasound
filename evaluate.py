@@ -193,7 +193,7 @@ def plot_grad_cam(image_file, model, layer, filter_idx=None):
     plt.show()
 
 def plot_multiple_grad_cam(images, model, layer, filter_idx=None):
-    f, ax = plt.subplots(2, len(images))
+    f, ax = plt.subplots(2, len(images), figsize=(4 * len(images), 4))
     ax = ax.flatten()
     for i, filename in enumerate(images):
         image = load_img(filename, target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE))
