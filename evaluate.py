@@ -135,8 +135,8 @@ def plot_roc_curve(labels, results, experts=[]):
     if len(experts) > 0:
         experts_data = pandas.DataFrame([{
             "name": e["name"],
-            "FPR": e["FPR"][0],
-            "TPR": e["TPR"][0],
+            "FPR": e["FPR"][1],
+            "TPR": e["TPR"][1],
         } for e in experts ])
         sns.scatterplot(data=experts_data, x="FPR", y="TPR", hue="name")
     fpr, tpr = calculate_roc_curve(labels, results)
