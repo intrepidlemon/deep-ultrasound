@@ -169,14 +169,14 @@ def get_expert_results(expert_file, files, expert_key="malignantBenign"):
         results = []
         for f in files:
             try:
-                results.append(data.class_indices[expert[clean_filename(f)][expert_key]] )
+                results.append(expert[clean_filename(f)][expert_key])
             except Exception as e:
                 results.append(0)
                 print("error with {}: {}".format(f, e))
         return results
 
 def plot_expert_confusion(expert_file, dataset):
-    results = np.array(get_expert_results(expert_file, dataset.filenames))
+    results = np.array([dataset.indices[i] for i in get_expert_results(expert_file, dataset.filenames)])
     plot_confusion_matrix(dataset, results)
     return calculate_confusion_matrix_stats(get_labels(dataset), results)
 
