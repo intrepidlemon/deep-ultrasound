@@ -25,16 +25,6 @@ def clean_filename(filename):
 def accession_from_filename(filename):
     return filename.split("-")[1]
 
-def get_expert_results(expert, data, expert_key):
-    results = []
-    for f in data.filenames:
-        try:
-            results.append(data.class_indices[expert[clean_filename(f)][expert_key]] )
-        except Exception as e:
-            results.append(0)
-            print("error with {}: {}".format(f, e))
-    return results
-
 def transform_binary_probabilities(results):
     probabilities = results.flatten()
     return probabilities
@@ -173,15 +163,20 @@ def plot_tsne(model, layer_name, data, labels, perplexity=5):
     plt.axis('off')
     plt.show()
 
-
-def load_expert_results(expert_file, dataset):
+def get_expert_results(expert_file, files, expert_key="malignantBenign"):
     with open(expert_file) as o:
-        expert_data = json.load(o)
-        results = np.array(get_expert_results(expert_data, dataset, "malignantBenign"))
+        expert = json.load(o)
+        results = []
+        for f in files:
+            try:
+                results.append(data.class_indices[expert[clean_filename(f)][expert_key]] )
+            except Exception as e:
+                results.append(0)
+                print("error with {}: {}".format(f, e))
         return results
 
 def plot_expert_confusion(expert_file, dataset):
-    results = load_expert_results(expert_file, dataset)
+    results = np.array(get_expert_results(expert_file, dataset.filenames))
     plot_confusion_matrix(dataset, results)
     return calculate_confusion_matrix_stats(get_labels(dataset), results)
 
@@ -193,4 +188,17 @@ def plot_grad_cam(image_file, model, layer, filter_idx=None):
     ax[0].axis('off')
     ax[1].imshow(image)
     ax[1].axis('off')
+    plt.show()
+
+def plot_multiple_grad_cam(images, model, layer, filter_idx=None):
+    f, ax = plt.subplots(2, len(images))
+    ax = ax.flatten()
+    for i in images:
+        image = load_img(i, target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE))
+        ax[i].imshow(image)
+        ax[i].axis('off')
+    for i in images:
+        grad = visualize_cam(model, find_layer_idx(model, layer), filter_idx, normalize(i), backprop_modifier="relu")
+        ax[i + len(images)].imshow(overlay(grad, image))
+        ax[i + len(images)].axis('off')
     plt.show()
