@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import json
 
-from vis.visualization import visualize_cam, overlay
+from vis.visualization import visualize_cam, visualize_saliency, overlay
 from vis.utils.utils import load_img, normalize, find_layer_idx
 from keras.models import load_model, Model
 from sklearn.metrics import auc, precision_recall_curve, roc_curve, confusion_matrix
@@ -192,7 +192,7 @@ def plot_grad_cam(image_file, model, layer, filter_idx=None, backprop_modifier="
     ax[1].axis('off')
     plt.show()
 
-def plot_multiple_grad_cam(images, model, layer, filter_idx=None, backprop_modifier="relu"):
+def plot_multiple_grad_cam(images, model, layer, filter_idx=None, backprop_modifier=None, grad_modifier=None):
     f, ax = plt.subplots(2, len(images), figsize=(4 * len(images), 4))
     ax = ax.flatten()
     for i, filename in enumerate(images):
@@ -200,8 +200,25 @@ def plot_multiple_grad_cam(images, model, layer, filter_idx=None, backprop_modif
         ax[i].imshow(image)
         ax[i].axis('off')
     for i, filename in enumerate(images):
-        grad = visualize_cam(model, find_layer_idx(model, layer), filter_idx, normalize(image), backprop_modifier=backprop_modifier)
+        grad = visualize_cam(model, find_layer_idx(model, layer), filter_idx, normalize(image), backprop_modifier=backprop_modifier, grad_modifier=grad_modifier)
         image = load_img(filename, target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE))
         ax[i + len(images)].imshow(overlay(grad, image))
         ax[i + len(images)].axis('off')
     plt.show()
+
+def plot_multiple_saliency(images, model, layer, filter_idx=None, backprop_modifier=None, grad_modifier=None):
+    f, ax = plt.subplots(2, len(images), figsize=(4 * len(images), 4))
+    ax = ax.flatten()
+    for i, filename in enumerate(images):
+        image = load_img(filename, target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE))
+        ax[i].imshow(image)
+        ax[i].axis('off')
+    for i, filename in enumerate(images):
+        grad = visualize_saliency(model, find_layer_idx(model, layer), filter_idx, normalize(image), backprop_modifier=backprop_modifier, grad_modifier=grad_modifier)
+        image = load_img(filename, target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE))
+        ax[i + len(images)].imshow(overlay(grad, image))
+        ax[i + len(images)].axis('off')
+    plt.show()
+
+
+
