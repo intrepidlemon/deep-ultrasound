@@ -132,6 +132,7 @@ def plot_roc_curve(labels, results, experts=[]):
     fpr, tpr = calculate_roc_curve(labels, results)
     plt.plot([0, 1], [0, 1], linestyle='--')
     plt.plot(fpr, tpr)
+    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
     plt.show()
 
 def plot_confusion_matrix(data, results):
@@ -161,6 +162,7 @@ def plot_tsne(model, layer_name, data, labels, perplexity=5):
     })
     sns.scatterplot(x="x", y="y", data=pd, hue="label", hue_order=np.unique(labels))
     plt.axis('off')
+    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
     plt.show()
 
 def get_expert_results(expert_file, files, expert_key="malignantBenign"):
