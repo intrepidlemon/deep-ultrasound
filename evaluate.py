@@ -182,9 +182,9 @@ def plot_expert_confusion(expert_file, dataset):
     plot_confusion_matrix(dataset, results)
     return calculate_confusion_matrix_stats(get_labels(dataset), results)
 
-def plot_grad_cam(image_file, model, layer, filter_idx=None):
+def plot_grad_cam(image_file, model, layer, filter_idx=None, backprop_modifier="relu"):
     image = load_img(image_file, target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE))
-    grad = visualize_cam(model, find_layer_idx(model, layer), filter_idx, normalize(image), backprop_modifier="relu")
+    grad = visualize_cam(model, find_layer_idx(model, layer), filter_idx, normalize(image), backprop_modifier=backprop_modifier)
     f, ax = plt.subplots(1, 2)
     ax[0].imshow(overlay(grad, image))
     ax[0].axis('off')
@@ -192,7 +192,7 @@ def plot_grad_cam(image_file, model, layer, filter_idx=None):
     ax[1].axis('off')
     plt.show()
 
-def plot_multiple_grad_cam(images, model, layer, filter_idx=None):
+def plot_multiple_grad_cam(images, model, layer, filter_idx=None, backprop_modifier="relu"):
     f, ax = plt.subplots(2, len(images), figsize=(4 * len(images), 4))
     ax = ax.flatten()
     for i, filename in enumerate(images):
@@ -200,7 +200,7 @@ def plot_multiple_grad_cam(images, model, layer, filter_idx=None):
         ax[i].imshow(image)
         ax[i].axis('off')
     for i, filename in enumerate(images):
-        grad = visualize_cam(model, find_layer_idx(model, layer), filter_idx, normalize(image), backprop_modifier="relu")
+        grad = visualize_cam(model, find_layer_idx(model, layer), filter_idx, normalize(image), backprop_modifier=backprop_modifier)
         image = load_img(filename, target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE))
         ax[i + len(images)].imshow(overlay(grad, image))
         ax[i + len(images)].axis('off')
