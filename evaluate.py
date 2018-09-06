@@ -171,7 +171,7 @@ def get_expert_results(expert_file, files, expert_key="malignantBenign"):
             try:
                 results.append(expert[clean_filename(f)][expert_key])
             except Exception as e:
-                results.append(0)
+                results.append(None)
                 print("error with {}: {}".format(f, e))
         return results
 
