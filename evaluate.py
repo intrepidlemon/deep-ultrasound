@@ -203,6 +203,7 @@ def plot_multiple_grad_cam(images, model, layer, penultimate_layer=None, filter_
         ax[i].imshow(image)
         ax[i].axis('off')
     for i, filename in enumerate(images):
+        image = load_img(filename, target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE))
         grad = visualize_cam(
                 model,
                 find_layer_idx(model, layer),
@@ -212,7 +213,6 @@ def plot_multiple_grad_cam(images, model, layer, penultimate_layer=None, filter_
                 backprop_modifier=backprop_modifier,
                 grad_modifier=grad_modifier
                 )
-        image = load_img(filename, target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE))
         ax[i + len(images)].imshow(overlay(grad, image))
         ax[i + len(images)].axis('off')
     plt.show()
