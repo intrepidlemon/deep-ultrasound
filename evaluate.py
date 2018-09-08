@@ -147,7 +147,7 @@ def plot_confusion_matrix(data, results):
             xticklabels=labels,
             )
     plt.xlabel('prediction')
-    plt.ylabel('standard')
+    plt.ylabel('diagnosis by MRI or histopathology')
     plt.show()
 
 def plot_tsne(model, layer_name, data, labels, perplexity=5):
