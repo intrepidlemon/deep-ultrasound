@@ -193,7 +193,7 @@ def plot_grad_cam(image_file, model, layer, filter_idx=None, backprop_modifier="
     plt.show()
 
 def plot_multiple_grad_cam(images, model, layer, penultimate_layer=None, filter_idx=None, backprop_modifier=None, grad_modifier=None):
-    f, ax = plt.subplots(2, len(images), figsize=(4 * len(images), 4))
+    f, ax = plt.subplots(2, len(images), figsize=(4 * len(images), 8))
     ax = ax.flatten()
     penultimate_layer_idx = None
     if penultimate_layer:
