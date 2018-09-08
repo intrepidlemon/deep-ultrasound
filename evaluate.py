@@ -192,15 +192,26 @@ def plot_grad_cam(image_file, model, layer, filter_idx=None, backprop_modifier="
     ax[1].axis('off')
     plt.show()
 
-def plot_multiple_grad_cam(images, model, layer, filter_idx=None, backprop_modifier=None, grad_modifier=None):
+def plot_multiple_grad_cam(images, model, layer, penultimate_layer=None, filter_idx=None, backprop_modifier=None, grad_modifier=None):
     f, ax = plt.subplots(2, len(images), figsize=(4 * len(images), 4))
     ax = ax.flatten()
+    penultimate_layer_idx = None
+    if penultimate_layer:
+        penultimate_layer_idx = find_layer_idx(model, penultimate_layer)
     for i, filename in enumerate(images):
         image = load_img(filename, target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE))
         ax[i].imshow(image)
         ax[i].axis('off')
     for i, filename in enumerate(images):
-        grad = visualize_cam(model, find_layer_idx(model, layer), filter_idx, normalize(image), backprop_modifier=backprop_modifier, grad_modifier=grad_modifier)
+        grad = visualize_cam(
+                model,
+                find_layer_idx(model, layer),
+                filter_idx,
+                normalize(image),
+                penultimate_layer_idx=penultimate_layer_idx,
+                backprop_modifier=backprop_modifier,
+                grad_modifier=grad_modifier
+                )
         image = load_img(filename, target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE))
         ax[i + len(images)].imshow(overlay(grad, image))
         ax[i + len(images)].axis('off')
