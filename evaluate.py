@@ -119,23 +119,27 @@ def calculate_pr_auc(labels, results):
 
 def plot_precision_recall(labels, results):
     precision, recall = calculate_precision_recall_curve(labels, results)
-    plt.step(recall, precision)
+    fig, ax = plt.subplots()
+    ax.step(recall, precision)
+    return fig
 
 def plot_roc_curve(labels, results, experts=[]):
+    fig, ax = plt.subplots()
     if len(experts) > 0:
         experts_data = pandas.DataFrame([{
             "name": e["name"],
             "FPR": e["FPR"][1],
             "TPR": e["TPR"][1],
         } for e in experts ])
-        sns.scatterplot(data=experts_data, x="FPR", y="TPR", hue="name")
+        sns.scatterplot(data=experts_data, x="FPR", y="TPR", hue="name", ax=ax)
     fpr, tpr = calculate_roc_curve(labels, results)
-    plt.plot([0, 1], [0, 1], linestyle='--')
-    plt.plot(fpr, tpr)
-    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
-    plt.show()
+    ax.plot([0, 1], [0, 1], linestyle='--')
+    ax.plot(fpr, tpr)
+    ax.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    return fig
 
 def plot_confusion_matrix(data, results):
+    fig, ax = plt.subplots()
     confusion_matrix = calculate_confusion_matrix(get_labels(data), results)
     labels = list(data.class_indices.keys())
     labels.sort()
@@ -145,12 +149,14 @@ def plot_confusion_matrix(data, results):
             cmap="YlGnBu",
             yticklabels=labels,
             xticklabels=labels,
+            ax=ax,
             )
-    plt.xlabel('prediction')
-    plt.ylabel('diagnosis by MRI or histopathology')
-    plt.show()
+    ax.xlabel('prediction')
+    ax.ylabel('diagnosis by MRI or histopathology')
+    return fig
 
 def plot_tsne(model, layer_name, data, labels, perplexity=5):
+    fig, ax = plt.subplots()
     intermediate_layer_model = Model(inputs=model.input,
                                  outputs=model.get_layer(layer_name).output)
     intermediate_output = intermediate_layer_model.predict_generator(data)
@@ -160,10 +166,10 @@ def plot_tsne(model, layer_name, data, labels, perplexity=5):
         "y": [d[1] for d in embedding],
         "label": labels,
     })
-    sns.scatterplot(x="x", y="y", data=pd, hue="label", hue_order=np.unique(labels))
-    plt.axis('off')
-    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
-    plt.show()
+    sns.scatterplot(x="x", y="y", data=pd, hue="label", hue_order=np.unique(labels), ax=ax)
+    ax.axis('off')
+    ax.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    return fig
 
 def get_expert_results(expert_file, files, expert_key="malignantBenign"):
     with open(expert_file) as o:
@@ -179,21 +185,21 @@ def get_expert_results(expert_file, files, expert_key="malignantBenign"):
 
 def plot_expert_confusion(expert_file, dataset):
     results = np.array([dataset.class_indices.get(i, 0) for i in get_expert_results(expert_file, dataset.filenames)])
-    plot_confusion_matrix(dataset, results)
-    return calculate_confusion_matrix_stats(get_labels(dataset), results)
+    fig = plot_confusion_matrix(dataset, results)
+    return calculate_confusion_matrix_stats(get_labels(dataset), results), fig
 
 def plot_grad_cam(image_file, model, layer, filter_idx=None, backprop_modifier="relu"):
     image = load_img(image_file, target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE))
     grad = visualize_cam(model, find_layer_idx(model, layer), filter_idx, normalize(image), backprop_modifier=backprop_modifier)
-    f, ax = plt.subplots(1, 2)
+    fig, ax = plt.subplots(1, 2)
     ax[0].imshow(overlay(grad, image))
     ax[0].axis('off')
     ax[1].imshow(image)
     ax[1].axis('off')
-    plt.show()
+    return fig
 
 def plot_multiple_grad_cam(images, model, layer, penultimate_layer=None, filter_idx=None, backprop_modifier=None, grad_modifier=None):
-    f, ax = plt.subplots(2, len(images), figsize=(4 * len(images), 8))
+    fig, ax = plt.subplots(2, len(images), figsize=(4 * len(images), 8))
     ax = ax.flatten()
     penultimate_layer_idx = None
     if penultimate_layer:
@@ -215,10 +221,10 @@ def plot_multiple_grad_cam(images, model, layer, penultimate_layer=None, filter_
                 )
         ax[i + len(images)].imshow(overlay(grad, image))
         ax[i + len(images)].axis('off')
-    plt.show()
+    return fig
 
 def plot_multiple_saliency(images, model, layer, filter_idx=None, backprop_modifier=None, grad_modifier=None):
-    f, ax = plt.subplots(2, len(images), figsize=(4 * len(images), 4))
+    fig, ax = plt.subplots(2, len(images), figsize=(4 * len(images), 4))
     ax = ax.flatten()
     for i, filename in enumerate(images):
         image = load_img(filename, target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE))
@@ -229,7 +235,4 @@ def plot_multiple_saliency(images, model, layer, filter_idx=None, backprop_modif
         image = load_img(filename, target_size=(config.IMAGE_SIZE, config.IMAGE_SIZE))
         ax[i + len(images)].imshow(overlay(grad, image))
         ax[i + len(images)].axis('off')
-    plt.show()
-
-
-
+    return fig
