@@ -16,8 +16,10 @@ matplotlib = "*"
 flask = "*"
 flask-sqlalchemy = "*"
 flask-migrate = "*"
-keras-vis = "*"
+keras-vis = {ref = "master", git = "https://github.com/raghakot/keras-vis.git"}
 papermill = "*"
+tabulate = "*"
+svgutils = "*"
 
 [dev-packages]
 
