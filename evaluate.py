@@ -136,7 +136,8 @@ def plot_roc_curve(labels, results, experts=[], name="model"):
         sns.scatterplot(data=experts_data, x="FPR", y="TPR", hue="name", ax=ax)
     fpr, tpr = calculate_roc_curve(labels, results)
     ax.plot([0, 1], [0, 1], linestyle='--')
-    ax.plot(fpr, tpr, label="{} (auc={:.3f})".format(name, auc))
+    ax.plot(fpr, tpr)
+    ax.text(1, 0, s="auc={:.3f}".format(auc), horizontalalignment='right', veriticalalignment='bottom')
     ax.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
     return fig
 
