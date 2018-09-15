@@ -6,7 +6,7 @@ import json
 from vis.visualization import visualize_cam, visualize_saliency, overlay
 from vis.utils.utils import load_img, normalize, find_layer_idx
 from keras.models import load_model, Model
-from sklearn.metrics import auc, precision_recall_curve, roc_curve, confusion_matrix
+from sklearn.metrics import auc, precision_recall_curve, roc_curve, confusion_matrix, roc_auc_score
 from sklearn import manifold
 import pandas
 from config import config
