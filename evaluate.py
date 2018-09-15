@@ -137,7 +137,7 @@ def plot_roc_curve(labels, results, experts=[], name="model"):
     fpr, tpr = calculate_roc_curve(labels, results)
     ax.plot([0, 1], [0, 1], linestyle='--')
     ax.plot(fpr, tpr)
-    ax.text(1, 0, s="auc={:.3f}".format(auc), horizontalalignment='right', veriticalalignment='bottom')
+    ax.text(1, 0, s="auc={:.3f}".format(auc), horizontalalignment='right', verticalalignment='bottom')
     ax.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
     return fig
 
