@@ -123,7 +123,9 @@ def plot_precision_recall(labels, results):
     ax.step(recall, precision)
     return fig
 
-def plot_roc_curve(labels, results, experts=[]):
+def plot_roc_curve(labels, results, experts=[], name="model"):
+    probabilities = transform_binary_probabilities(results)
+    auc = roc_auc_score(labels, probabilities)
     fig, ax = plt.subplots()
     if len(experts) > 0:
         experts_data = pandas.DataFrame([{
@@ -134,7 +136,7 @@ def plot_roc_curve(labels, results, experts=[]):
         sns.scatterplot(data=experts_data, x="FPR", y="TPR", hue="name", ax=ax)
     fpr, tpr = calculate_roc_curve(labels, results)
     ax.plot([0, 1], [0, 1], linestyle='--')
-    ax.plot(fpr, tpr)
+    ax.plot(fpr, tpr, label="{} (auc={})".format(name, auc))
     ax.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
     return fig
 
