@@ -24,7 +24,7 @@ class Config(object):
     FEATURES = os.path.join(DATA, "features.csv")
     TEST_SET = None
 
-    OUTPUT = "/data/intrepidlemon/deep-ultrasound/output2"
+    OUTPUT = "output"
     DB_URL = "sqlite:///{}/results.db".format(OUTPUT)
     MODEL_DIR = os.path.join(OUTPUT, "models")
     STDOUT_DIR = os.path.join(OUTPUT, "stdout")

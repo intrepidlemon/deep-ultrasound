@@ -1,3 +1,8 @@
+
+# Modified from IX's original data.py intended for ultrasound images
+# Last edits by BC
+# Note that Keras is only compatible up to Python 3.6
+
 import os
 import glob
 import argparse
@@ -72,20 +77,26 @@ def clear():
     os.makedirs(config.VALIDATION_DIR, exist_ok=True)
 
 
+# Returns list of path names from the raw directory
+# The path names will be of the form RAW_DIR/free-*
 def all_files(prefix="free", raw=config.RAW_DIR):
     return glob.glob(os.path.join(raw, "{}-*".format(prefix)))
 
-
+# Returns a dict of { picture ID# : [picture pathname] }
+# Input is a list of path names
+# TODO: how does scope of "files" work inside for loop?
 def all_identifiers(files):
     out = dict()
     for f in files:
-        identifier = os.path.basename(f).split("-")[1]
+        identifier = os.path.basename(f).split("-")[1] # identifier = unique picture ID#
         files = out.get(identifier, [])
         files.append(f)
         out[identifier] = files
     return out
 
-
+# Returns three dicts: {id:imaging}, {id:category}, {id:feature}
+# Example usage: all_features(['benign', 'malignant'])
+# features is a csv file
 def all_features(valid_features=None, features=config.FEATURES):
     feature = dict()
     imaging = dict()
@@ -95,11 +106,13 @@ def all_features(valid_features=None, features=config.FEATURES):
         for row in reader:
             imaging[row["id"]] = row["imaging"]
             category[row["id"]] = row["category"]
+            # If feature of file is not desired, skip it and leave empty
             if valid_features is not None and row["feature"] not in valid_features:
                 continue
             feature[row["id"]] = row["feature"]
     return feature, imaging, category
 
+# Returns list of picture id that belong in test
 def all_test_set():
     out = list()
     with open(config.TEST_SET) as f:
@@ -155,11 +168,14 @@ def print_describe(prefix="free", raw=config.RAW_DIR, features=config.FEATURES):
             values, counts = np.unique(df[df.category==category][column], return_counts=True)
             print("\t\t", dict(zip(values, counts)))
 
-def sort(validation_split=0.2, prefix="free"):
-    files = all_identifiers(all_files(prefix))
-    feat, _, _ = all_features(['benign', 'malignant'])
 
-    # create directories
+# Sort files from raw into train, test, and validation
+# validation_split is fraction of pics in validation
+def sort(validation_split=0.2, prefix="free"):
+    files = all_identifiers(all_files(prefix))          # dict of { id : [picture pathname] }
+    feat, _, _ = all_features(['benign', 'malignant'])  # dict of { id : feature }
+
+    # create feature directories within train, validation, and test
     uniq_features = set(feat.values())
     for f in uniq_features:
         os.makedirs(os.path.join(config.TRAIN_DIR, f), exist_ok=True)
@@ -169,19 +185,20 @@ def sort(validation_split=0.2, prefix="free"):
     identifiers = list(files.keys())
     identifiers = [i for i in identifiers if i in feat]
 
-    # separate out test set
+    # separate out test set from identifiers
     test = []
     if config.TEST_SET:
-        test_source = all_test_set()
+        test_source = all_test_set()                    # list of picture id in test_source
         test = [i for i in identifiers if i in test_source]
         # rest of identifiers without test set
         identifiers = [i for i in identifiers if i not in test_source]
 
-    filtered_feat = { i: feat[i] for i in identifiers }
-    identifiers_by_feature = defaultdict(list)
+    filtered_feat = { i: feat[i] for i in identifiers } # dict {id:feature}, excluding test
+    identifiers_by_feature = defaultdict(list)          # dict { feature : [id1, id2, ...]}
     for f, feature in filtered_feat.items():
         identifiers_by_feature[feature].append(f)
 
+    # split pics into validation and train sets
     validation = []
     train = []
     for feature, fs in identifiers_by_feature.items():
@@ -190,6 +207,7 @@ def sort(validation_split=0.2, prefix="free"):
         validation.extend(fs[:split])
         train.extend(fs[split:])
 
+    # add identified files to the intended directory
     for i in test:
         if i in feat:
             for f in files[i]:
