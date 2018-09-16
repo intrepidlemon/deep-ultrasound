@@ -1,6 +1,7 @@
 
 # Modified from IX's original data.py intended for ultrasound images
 # Last edits by BC
+# TODO: had to save csv as MS-DOS csv in Excel?
 # Note that Keras is only compatible up to Python 3.6
 
 import os
@@ -78,9 +79,9 @@ def clear():
 
 
 # Returns list of path names from the raw directory
-# The path names will be of the form RAW_DIR/free-*
-def all_files(prefix="free", raw=config.RAW_DIR):
-    return glob.glob(os.path.join(raw, "{}-*".format(prefix)))
+# The path names will be of the form RAW_DIR/*
+def all_files(raw=config.RAW_DIR):
+    return glob.glob(os.path.join(raw, "*"))
 
 # Returns a dict of { picture ID# : [picture pathname] }
 # Input is a list of path names
@@ -88,15 +89,14 @@ def all_files(prefix="free", raw=config.RAW_DIR):
 def all_identifiers(files):
     out = dict()
     for f in files:
-        identifier = os.path.basename(f).split("-")[1] # identifier = unique picture ID#
+        identifier = os.path.basename(f).split(".")[0] # identifier = unique picture ID#
         files = out.get(identifier, [])
         files.append(f)
         out[identifier] = files
     return out
 
-# Returns three dicts: {id:imaging}, {id:category}, {id:feature}
+# Returns three dicts: {id:imaging}, {id:category}, {id:feature} from feature.csv
 # Example usage: all_features(['benign', 'malignant'])
-# features is a csv file
 def all_features(valid_features=None, features=config.FEATURES):
     feature = dict()
     imaging = dict()
@@ -172,7 +172,7 @@ def print_describe(prefix="free", raw=config.RAW_DIR, features=config.FEATURES):
 # Sort files from raw into train, test, and validation
 # validation_split is fraction of pics in validation
 def sort(validation_split=0.2, prefix="free"):
-    files = all_identifiers(all_files(prefix))          # dict of { id : [picture pathname] }
+    files = all_identifiers(all_files())          # dict of { id : [picture pathname] }
     feat, _, _ = all_features(['benign', 'malignant'])  # dict of { id : feature }
 
     # create feature directories within train, validation, and test
@@ -206,6 +206,7 @@ def sort(validation_split=0.2, prefix="free"):
         split = int(len(fs) * validation_split)
         validation.extend(fs[:split])
         train.extend(fs[split:])
+
 
     # add identified files to the intended directory
     for i in test:
