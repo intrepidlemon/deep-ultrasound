@@ -22,9 +22,9 @@ class Config(object):
     TEST_DIR = os.path.join(DATA, "test")
     VALIDATION_DIR = os.path.join(DATA, "validation")
     FEATURES = os.path.join(DATA, "features.csv")
-    TEST_SET = None
+    TEST_SET = os.path.join(DATA, "test_set.csv")
 
-    OUTPUT = "/data/intrepidlemon/deep-ultrasound/output2"
+    OUTPUT = "output"
     DB_URL = "sqlite:///{}/results.db".format(OUTPUT)
     MODEL_DIR = os.path.join(OUTPUT, "models")
     STDOUT_DIR = os.path.join(OUTPUT, "stdout")
