@@ -159,7 +159,7 @@ def plot_confusion_matrix(data, results):
     return fig
 
 def plot_tsne(model, layer_name, data, labels, perplexity=5):
-    figures = list[]
+    figures = list()
     intermediate_layer_model = Model(inputs=model.input,
                                  outputs=model.get_layer(layer_name).output)
     intermediate_output = intermediate_layer_model.predict_generator(data)
