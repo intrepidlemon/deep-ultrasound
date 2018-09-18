@@ -92,7 +92,7 @@ def all_features(valid_features=None, features=config.FEATURES, fieldnames=["mal
         reader = csv.DictReader(f, fieldnames=["id", *fieldnames])
         for row in reader:
             for i, field in enumerate(fieldnames):
-                if valid_features is not None and valid_features[field] is not None and row[field] not in valid_features[field]:
+                if valid_features is not None and valid_features.get(field) is not None and row[field] not in valid_features[field]:
                     continue
                 features_tuple[i][row["id"]] = row[field]
     return features_tuple
