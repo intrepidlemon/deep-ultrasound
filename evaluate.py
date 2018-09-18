@@ -207,8 +207,20 @@ def plot_grad_cam(image_file, model, layer, filter_idx=None, backprop_modifier="
     ax[1].axis('off')
     return fig
 
-def plot_multiple_grad_cam(images, model, layer, penultimate_layer=None, filter_idx=None, backprop_modifier=None, grad_modifier=None):
-    fig, ax = plt.subplots(2, len(images), figsize=(4 * len(images), 8))
+def plot_multiple_grad_cam(
+        images,
+        model,
+        layer,
+        penultimate_layer=None,
+        filter_idx=None,
+        backprop_modifier=None,
+        grad_modifier=None,
+        experts=None,
+        ):
+    rows = 2
+    if experts is not None:
+        rows = 3
+    fig, ax = plt.subplots(rows, len(images), figsize=(4 * len(images), 4 * rows))
     ax = ax.flatten()
     penultimate_layer_idx = None
     if penultimate_layer:
@@ -230,6 +242,15 @@ def plot_multiple_grad_cam(images, model, layer, penultimate_layer=None, filter_
                 )
         ax[i + len(images)].imshow(overlay(grad, image))
         ax[i + len(images)].axis('off')
+    if experts:
+        for i, filename in enumerate(images):
+            for j, expert in enumerate(experts):
+                if i == 0:
+                    message = "expert {}: {}".format(j, expert[i])
+                    ax[i + 2 * len(images)].text(1, 0.33 * j, message, horizontalalignment='right', verticalalignment='center')
+                else:
+                    message = "{}".format(expert[i])
+                    ax[i + 2 * len(images)].text(0.5, 0.33 * j, message, horizontalalignment='center', verticalalignment='center')
     return fig, ax
 
 def plot_multiple_saliency(images, model, layer, filter_idx=None, backprop_modifier=None, grad_modifier=None):
