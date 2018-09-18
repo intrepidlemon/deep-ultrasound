@@ -165,17 +165,18 @@ def plot_tsne(model, layer_name, data, labels, fieldnames=None, perplexity=5):
     intermediate_output = intermediate_layer_model.predict_generator(data)
     embedding = manifold.TSNE(perplexity=perplexity).fit_transform(intermediate_output)
     for i, label in enumerate(labels):
+        labelname = "label"
+        if fieldnames is not None:
+            labelname = fieldnames[i]
         pd = pandas.DataFrame.from_dict({
             "x": [d[0] for d in embedding],
             "y": [d[1] for d in embedding],
-            "label": label,
+            labelname: label,
         })
         fig, ax = plt.subplots()
-        sns.scatterplot(x="x", y="y", data=pd, hue="label", hue_order=np.unique(label), ax=ax)
+        sns.scatterplot(x="x", y="y", data=pd, hue=labelname, hue_order=np.unique(label), ax=ax)
         ax.axis('off')
         ax.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
-        if fieldnames is not None:
-            ax.set_title("{}".format(fieldnames[i]))
         figures.append(fig)
         plt.show()
     return figures
