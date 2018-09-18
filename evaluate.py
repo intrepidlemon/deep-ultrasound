@@ -158,13 +158,13 @@ def plot_confusion_matrix(data, results):
     plt.ylabel('diagnosis by MRI or histopathology', axes=ax)
     return fig
 
-def plot_tsne(model, layer_name, data, labels, perplexity=5):
+def plot_tsne(model, layer_name, data, labels, fieldnames=None, perplexity=5):
     figures = list()
     intermediate_layer_model = Model(inputs=model.input,
                                  outputs=model.get_layer(layer_name).output)
     intermediate_output = intermediate_layer_model.predict_generator(data)
     embedding = manifold.TSNE(perplexity=perplexity).fit_transform(intermediate_output)
-    for label in labels:
+    for i, label in enumerate(labels):
         pd = pandas.DataFrame.from_dict({
             "x": [d[0] for d in embedding],
             "y": [d[1] for d in embedding],
@@ -174,6 +174,8 @@ def plot_tsne(model, layer_name, data, labels, perplexity=5):
         sns.scatterplot(x="x", y="y", data=pd, hue="label", hue_order=np.unique(label), ax=ax)
         ax.axis('off')
         ax.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+        if fieldnames is not None:
+            ax.set_title("{}".format(fieldnames[i]))
         figures.append(fig)
         plt.show()
     return figures
