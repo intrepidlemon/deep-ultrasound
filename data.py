@@ -87,15 +87,15 @@ def all_identifiers(files):
 
 
 def all_features(valid_features=None, features=config.FEATURES, fieldnames=["malignant", "imaging", "category"]):
-    features = tuple(dict() for _ in fieldnames)
+    features_tuple = tuple(dict() for _ in fieldnames)
     with open(features) as f:
         reader = csv.DictReader(f, fieldnames=["id", *fieldnames])
         for row in reader:
             for i, field in enumerate(fieldnames):
                 if valid_features is not None and valid_features[field] is not None and row[field] not in valid_features[field]:
                     continue
-                features[i][row["id"]] = row[field]
-    return features
+                features_tuple[i][row["id"]] = row[field]
+    return features_tuple
 
 def all_test_set():
     out = list()
