@@ -86,19 +86,16 @@ def all_identifiers(files):
     return out
 
 
-def all_features(valid_features=None, features=config.FEATURES):
-    feature = dict()
-    imaging = dict()
-    category = dict()
+def all_features(valid_features=None, features=config.FEATURES, fieldnames=["malignant", "imaging", "category"]):
+    features = tuple(dict() for _ in fieldnames)
     with open(features) as f:
-        reader = csv.DictReader(f, fieldnames=["id", "feature", "imaging", "category"])
+        reader = csv.DictReader(f, fieldnames=["id", *fieldnames])
         for row in reader:
-            imaging[row["id"]] = row["imaging"]
-            category[row["id"]] = row["category"]
-            if valid_features is not None and row["feature"] not in valid_features:
-                continue
-            feature[row["id"]] = row["feature"]
-    return feature, imaging, category
+            for i, field in enumerate(fieldnames):
+                if valid_features is not None and valid_features[field] is not None and row[field] not in valid_features[field]:
+                    continue
+                features[i][row["id"]] = row[field]
+    return features
 
 def all_test_set():
     out = list()
@@ -110,8 +107,7 @@ def all_test_set():
 
 def describe(prefix="free", raw=config.RAW_DIR, features=config.FEATURES):
     files = all_identifiers(all_files(prefix, raw))
-    feat, imag, category = all_features(['benign', 'malignant'], features)
-
+    feat, imag, category = all_features({ "malignant": ['benign', 'malignant']}, features)
     identifiers = list(files.keys())
     identifiers = [i for i in identifiers if i in feat]
 
@@ -157,7 +153,7 @@ def print_describe(prefix="free", raw=config.RAW_DIR, features=config.FEATURES):
 
 def sort(validation_split=0.2, prefix="free"):
     files = all_identifiers(all_files(prefix))
-    feat, _, _ = all_features(['benign', 'malignant'])
+    feat, _, _ = all_features({ "malignant": ['benign', 'malignant'] })
 
     # create directories
     uniq_features = set(feat.values())
