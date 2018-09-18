@@ -248,7 +248,7 @@ def plot_multiple_grad_cam(
             for j, expert in enumerate(experts):
                 if i == 0:
                     message = "expert {}: {}".format(j + 1, expert[i])
-                    ax[i + 2 * len(images)].text(1, 1 - (expert_spacing * j), message, horizontalalignment='right', verticalalignment='center')
+                    ax[i + 2 * len(images)].text(0.3, 1 - (expert_spacing * j), message, horizontalalignment='left', verticalalignment='center')
                 else:
                     message = "{}".format(expert[i])
                     ax[i + 2 * len(images)].text(0.5, 1 - (expert_spacing * j), message, horizontalalignment='center', verticalalignment='center')
