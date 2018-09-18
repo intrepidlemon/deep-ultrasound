@@ -159,20 +159,24 @@ def plot_confusion_matrix(data, results):
     return fig
 
 def plot_tsne(model, layer_name, data, labels, perplexity=5):
-    fig, ax = plt.subplots()
+    figures = list[]
     intermediate_layer_model = Model(inputs=model.input,
                                  outputs=model.get_layer(layer_name).output)
     intermediate_output = intermediate_layer_model.predict_generator(data)
     embedding = manifold.TSNE(perplexity=perplexity).fit_transform(intermediate_output)
-    pd = pandas.DataFrame.from_dict({
-        "x": [d[0] for d in embedding],
-        "y": [d[1] for d in embedding],
-        "label": labels,
-    })
-    sns.scatterplot(x="x", y="y", data=pd, hue="label", hue_order=np.unique(labels), ax=ax)
-    ax.axis('off')
-    ax.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
-    return fig
+    for label in labels:
+        pd = pandas.DataFrame.from_dict({
+            "x": [d[0] for d in embedding],
+            "y": [d[1] for d in embedding],
+            "label": label,
+        })
+        fig, ax = plt.subplots()
+        sns.scatterplot(x="x", y="y", data=pd, hue="label", hue_order=np.unique(label), ax=ax)
+        ax.axis('off')
+        ax.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+        figures.append(fig)
+        plt.show()
+    return figures
 
 def get_expert_results(expert_file, files, expert_key="malignantBenign"):
     with open(expert_file) as o:
