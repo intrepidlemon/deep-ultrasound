@@ -230,7 +230,7 @@ def plot_multiple_grad_cam(images, model, layer, penultimate_layer=None, filter_
                 )
         ax[i + len(images)].imshow(overlay(grad, image))
         ax[i + len(images)].axis('off')
-    return fig
+    return fig, ax
 
 def plot_multiple_saliency(images, model, layer, filter_idx=None, backprop_modifier=None, grad_modifier=None):
     fig, ax = plt.subplots(2, len(images), figsize=(4 * len(images), 4))
