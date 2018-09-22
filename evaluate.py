@@ -122,8 +122,8 @@ def calculate_confusion_matrix_stats(labels, results):
         "FPR": FPR,
         "FNR": FNR,
         "FDR": FDR,
-        "AM": (TPR + TNR) / 2,
-        "GM": np.sqrt(TPR * TNR),
+        #"AM": (TPR + TNR) / 2,
+        #"GM": np.sqrt(TPR * TNR),
     }
 
 
