@@ -135,11 +135,11 @@ def calculate_pr_auc(labels, results):
 def plot_precision_recall(labels, results, experts=[]):
     precision, recall = calculate_precision_recall_curve(labels, results)
     auc = roc_auc_score(labels, results)
-    p, r = calculate_pr_auc(labels, results)
+    stats = calculate_confusion_matrix_stats(labels, results)
     points = [{
         "name": "model default",
-        "precision": p,
-        "recall": r,
+        "precision": stats["PPV"][1],
+        "recall": stats["TNR"][1],
     }]
     if len(experts) > 0:
         points = [
