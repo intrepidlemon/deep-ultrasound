@@ -157,8 +157,8 @@ def plot_precision_recall(labels, results, experts=[]):
         hue="name",
         ax=ax)
     ax.step(recall, precision)
-    ax.set_ylim(0, 1)
-    ax.set_xlim(0, 1)
+    ax.set_ylim(-0.2, 1.2)
+    ax.set_xlim(-0.2, 1.2)
     ax.text(
         0,
         0,
