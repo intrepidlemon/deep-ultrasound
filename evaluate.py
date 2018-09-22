@@ -117,27 +117,57 @@ def calculate_pr_auc(labels, results):
     precision, recall = calculate_precision_recall_curve(labels, results)
     return auc(recall, precision)
 
-def plot_precision_recall(labels, results):
+def plot_precision_recall(labels, results, experts=[]):
     precision, recall = calculate_precision_recall_curve(labels, results)
+    auc = roc_auc_score(labels, results)
+    p, r = calculate_pr_auc(labels, results):
+    points = [{
+        "name": "model default",
+        "precision": p,
+        "recall": r,
+    }]
+    if len(experts) > 0:
+        points = [
+            *points,
+            *[{
+                "name": e["name"],
+                "precision": e["PPV"][1],
+                "recall": e["TNR"][1],
+            } for e in experts ]
+        ]
     fig, ax = plt.subplots()
+    sns.scatterplot(data=pandas.DataFrame(points), x="recall", y="precision", hue="name", ax=ax)
     ax.step(recall, precision)
+    ax.set_ylim(0, 1)
+    ax.set_xlim(0, 1)
+    ax.text(1, 0, s="auc={:.2f}".format(auc), horizontalalignment='left', verticalalignment='bottom')
+    ax.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
     return fig
 
 def plot_roc_curve(labels, results, experts=[], name="model"):
     probabilities = transform_binary_probabilities(results)
     auc = roc_auc_score(labels, probabilities)
+    stats = calculate_confusion_matrix_stats(labels, results):
+    points = [{
+        "name": "model default",
+        "FPR": stats["FPR"][1],
+        "TPR": stats["TPR"][1],
+    }]
     fig, ax = plt.subplots()
     if len(experts) > 0:
-        experts_data = pandas.DataFrame([{
-            "name": e["name"],
-            "FPR": e["FPR"][1],
-            "TPR": e["TPR"][1],
-        } for e in experts ])
-        sns.scatterplot(data=experts_data, x="FPR", y="TPR", hue="name", ax=ax)
+        points = [
+            *points,
+            *[{
+                "name": e["name"],
+                "FPR": e["FPR"][1],
+                "TPR": e["TPR"][1],
+            } for e in experts ]
+        ]
+    sns.scatterplot(data=pandas.DataFrame(points), x="FPR", y="TPR", hue="name", ax=ax)
     fpr, tpr = calculate_roc_curve(labels, results)
     ax.plot([0, 1], [0, 1], linestyle='--')
     ax.plot(fpr, tpr)
-    ax.text(1, 0, s="auc={:.3f}".format(auc), horizontalalignment='right', verticalalignment='bottom')
+    ax.text(1, 0, s="auc={:.2f}".format(auc), horizontalalignment='right', verticalalignment='bottom')
     ax.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
     return fig
 
