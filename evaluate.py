@@ -120,7 +120,7 @@ def calculate_pr_auc(labels, results):
 def plot_precision_recall(labels, results, experts=[]):
     precision, recall = calculate_precision_recall_curve(labels, results)
     auc = roc_auc_score(labels, results)
-    p, r = calculate_pr_auc(labels, results):
+    p, r = calculate_pr_auc(labels, results)
     points = [{
         "name": "model default",
         "precision": p,
@@ -147,7 +147,7 @@ def plot_precision_recall(labels, results, experts=[]):
 def plot_roc_curve(labels, results, experts=[], name="model"):
     probabilities = transform_binary_probabilities(results)
     auc = roc_auc_score(labels, probabilities)
-    stats = calculate_confusion_matrix_stats(labels, results):
+    stats = calculate_confusion_matrix_stats(labels, results)
     points = [{
         "name": "model default",
         "FPR": stats["FPR"][1],
