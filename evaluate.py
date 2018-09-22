@@ -150,6 +150,7 @@ def plot_confusion_matrix(data, results):
             confusion_matrix,
             annot=True,
             cmap="YlGnBu",
+            cbar=False,
             yticklabels=labels,
             xticklabels=labels,
             ax=ax,
