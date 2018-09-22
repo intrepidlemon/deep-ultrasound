@@ -190,8 +190,8 @@ def plot_roc_curve(labels, results, experts=[], name="model"):
     sns.scatterplot(
         data=pandas.DataFrame(points), x="FPR", y="TPR", hue="name", ax=ax)
     fpr, tpr = calculate_roc_curve(labels, results)
-    ax.plot([0, 1], [0, 1], linestyle='--')
     ax.plot(fpr, tpr)
+    ax.plot([0, 1], [0, 1], color='b', linestyle='--', alpha=0.5)
     ax.text(
         1,
         0,
