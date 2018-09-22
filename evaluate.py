@@ -149,6 +149,7 @@ def plot_confusion_matrix(data, results):
     sns.heatmap(
             confusion_matrix,
             annot=True,
+            square=True,
             cmap="YlGnBu",
             cbar=False,
             yticklabels=labels,
