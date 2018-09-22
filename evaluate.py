@@ -157,13 +157,13 @@ def plot_precision_recall(labels, results, experts=[]):
         hue="name",
         ax=ax)
     ax.step(recall, precision)
-    ax.set_ylim(-0.2, 1.2)
-    ax.set_xlim(-0.2, 1.2)
+    ax.set_ylim(-0.04, 1.04)
+    ax.set_xlim(-0.04, 1.04)
     ax.text(
-        0,
+        1,
         0,
         s="auc={:.2f}".format(auc),
-        horizontalalignment='left',
+        horizontalalignment='right',
         verticalalignment='bottom')
     ax.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
     return fig
