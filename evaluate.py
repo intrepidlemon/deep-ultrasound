@@ -139,14 +139,14 @@ def plot_precision_recall(labels, results, experts=[]):
     points = [{
         "name": "model default",
         "precision": stats["PPV"][1],
-        "recall": stats["TNR"][1],
+        "recall": stats["TPR"][1],
     }]
     if len(experts) > 0:
         points = [
             *points, *[{
                 "name": e["name"],
                 "precision": e["PPV"][1],
-                "recall": e["TNR"][1],
+                "recall": e["TPR"][1],
             } for e in experts]
         ]
     fig, ax = plt.subplots()
@@ -160,7 +160,7 @@ def plot_precision_recall(labels, results, experts=[]):
     ax.set_ylim(0, 1)
     ax.set_xlim(0, 1)
     ax.text(
-        1,
+        0,
         0,
         s="auc={:.2f}".format(auc),
         horizontalalignment='left',
