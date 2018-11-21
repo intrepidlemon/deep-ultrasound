@@ -218,7 +218,7 @@ def plot_confusion_matrix(data, results):
         ax=ax,
     )
     plt.xlabel('prediction', axes=ax)
-    plt.ylabel('diagnosis by MRI or histopathology', axes=ax)
+    plt.ylabel('label', axes=ax)
     return fig
 
 
