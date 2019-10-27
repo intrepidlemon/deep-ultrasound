@@ -1,3 +1,5 @@
+set -e
+
 pipenv install --skip-lock
 
 pipenv run python setup.py

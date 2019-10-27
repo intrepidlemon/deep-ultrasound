@@ -1,6 +1,7 @@
 import os
 import logging
 
+DATA_DIR = os.environ["DATA_DIR"]
 
 class Config(object):
     IMAGE_SIZE = 200
@@ -16,15 +17,15 @@ class Config(object):
     SECRET = "example secret key"
     LOG_LEVEL = logging.DEBUG
 
-    DATA = "data"
+    DATA = os.path.join(DATA_DIR, "liver-ultrasound")
     RAW_DIR = os.path.join(DATA, "raw")
     TRAIN_DIR = os.path.join(DATA, "train")
     TEST_DIR = os.path.join(DATA, "test")
     VALIDATION_DIR = os.path.join(DATA, "validation")
     FEATURES = os.path.join(DATA, "features.csv")
-    TEST_SET = None
+    TEST_SET = os.path.join(DATA, "test.csv")
 
-    OUTPUT = "/data/intrepidlemon/deep-ultrasound/output2"
+    OUTPUT = os.path.join(DATA_DIR, "liver-ultrasound")
     DB_URL = "sqlite:///{}/results.db".format(OUTPUT)
     MODEL_DIR = os.path.join(OUTPUT, "models")
     STDOUT_DIR = os.path.join(OUTPUT, "stdout")
