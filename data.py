@@ -71,7 +71,6 @@ def clear():
     os.makedirs(config.TRAIN_DIR, exist_ok=True)
     os.makedirs(config.VALIDATION_DIR, exist_ok=True)
 
-
 def all_files(prefix="free", raw=config.RAW_DIR):
     return glob.glob(os.path.join(raw, "{}-*".format(prefix)))
 
@@ -80,11 +79,10 @@ def all_identifiers(files):
     out = dict()
     for f in files:
         identifier = os.path.basename(f).split("-")[1]
-        files = out.get(identifier, [])
+        files = out.get(identifier, list())
         files.append(f)
         out[identifier] = files
     return out
-
 
 def all_features(valid_features=None, features=config.FEATURES, fieldnames=["malignant", "imaging", "category"]):
     features_tuple = tuple(dict() for _ in fieldnames)

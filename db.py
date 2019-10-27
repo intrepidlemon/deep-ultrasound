@@ -38,6 +38,8 @@ class Result(db.Model):
     test_probabilities = db.Column(db.String)
     test_labels = db.Column(db.String)
 
+    history = db.Column(db.String)
+
     description = db.Column(db.String)
 
     def __repr__(self):
