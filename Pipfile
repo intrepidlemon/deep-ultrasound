@@ -5,8 +5,8 @@ name = "pypi"
 
 [packages]
 jupyter = "*"
-tensorflow = "*"
-keras = {extras = ["visualize"]}
+tensorflow-gpu = "==1.12.0"
+keras = "==2.2.4"
 pillow = "*"
 yapf = "*"
 pydot = "*"
@@ -16,10 +16,11 @@ matplotlib = "*"
 flask = "*"
 flask-sqlalchemy = "*"
 flask-migrate = "*"
-keras-vis = {ref = "master", git = "https://github.com/raghakot/keras-vis.git"}
+keras-vis = {git = "https://github.com/raghakot/keras-vis.git",ref = "master"}
 papermill = "*"
 tabulate = "*"
 svgutils = "*"
+tensorflow = "==1.12.0"
 
 [dev-packages]
 

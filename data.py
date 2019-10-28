@@ -78,13 +78,13 @@ def all_files(prefix="free", raw=config.RAW_DIR):
 def all_identifiers(files):
     out = dict()
     for f in files:
-        identifier = os.path.basename(f).split("-")[1]
+        identifier = os.path.basename(f).split("-")[1].replace(".jpeg", "")
         files = out.get(identifier, list())
         files.append(f)
         out[identifier] = files
     return out
 
-def all_features(valid_features=None, features=config.FEATURES, fieldnames=["malignant", "imaging", "category"]):
+def all_features(valid_features=None, features=config.FEATURES, fieldnames=["diagnosis", "malignant", "evidence"]):
     features_tuple = tuple(dict() for _ in fieldnames)
     with open(features) as f:
         reader = csv.DictReader(f, fieldnames=["id", *fieldnames])
@@ -151,8 +151,11 @@ def print_describe(prefix="free", raw=config.RAW_DIR, features=config.FEATURES):
 
 def sort(validation_split=0.2, prefix="free"):
     files = all_identifiers(all_files(prefix))
-    feat, _, _ = all_features({ "malignant": ['benign', 'malignant'] })
+    _, feat, _ = all_features({ "malignant": ['benign', 'malignant'] })
 
+    for f in feat: 
+        print(f)
+    print(len(feat))
     # create directories
     uniq_features = set(feat.values())
     for f in uniq_features:
