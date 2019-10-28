@@ -20,7 +20,7 @@ def load(filepath):
 
 
 def get_results(model, data):
-    return model.predict_generator(data, steps=math.ceil(len(data)/config.BATCH_SIZE))
+    return model.predict_generator(data, steps=math.ceil(data.n/config.BATCH_SIZE))
 
 
 def clean_filename(filename):
@@ -46,7 +46,7 @@ def get_labels(data):
 
 
 def calculate_accuracy_loss(model, data):
-    loss, accuracy = model.evaluate_generator(data, steps=math.ceil(len(data)/config.BATCH_SIZE))
+    loss, accuracy = model.evaluate_generator(data, steps=math.ceil(data.n/config.BATCH_SIZE))
     return loss, accuracy
 
 
@@ -227,7 +227,7 @@ def plot_tsne(model, layer_name, data, labels, fieldnames=None, perplexity=5):
     figures = list()
     intermediate_layer_model = Model(
         inputs=model.input, outputs=model.get_layer(layer_name).output)
-    intermediate_output = intermediate_layer_model.predict_generator(data, steps=math.ceil(len(data)/config.BATCH_SIZE))
+    intermediate_output = intermediate_layer_model.predict_generator(data, steps=math.ceil(data.n/config.BATCH_SIZE))
     embedding = manifold.TSNE(
         perplexity=perplexity).fit_transform(intermediate_output)
     for i, label in enumerate(labels):

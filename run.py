@@ -19,8 +19,8 @@ from config import config
 
 def test(model, train, validation, test_data):
 
-    loss, accuracy = model.evaluate_generator(validation, steps=math.ceil(len(validation)/config.BATCH_SIZE))
-    train_loss, train_accuracy = model.evaluate_generator(train, steps=math.ceil(len(train)/config.BATCH_SIZE))
+    loss, accuracy = model.evaluate_generator(validation, steps=math.ceil(validation.n/config.BATCH_SIZE))
+    train_loss, train_accuracy = model.evaluate_generator(train, steps=math.ceil(train.n/config.BATCH_SIZE))
 
     results = evaluate.get_results(model, validation)
     probabilities = list(evaluate.transform_binary_probabilities(results))
@@ -31,7 +31,7 @@ def test(model, train, validation, test_data):
     test_probabilities = []
     test_labels = []
     if len(test_data.classes) != 0:
-        test_loss, test_accuracy = model.evaluate_generator(test_data, steps=math.ceil(len(test_data)/config.BATCH_SIZE))
+        test_loss, test_accuracy = model.evaluate_generator(test_data, steps=math.ceil(test_data.n/config.BATCH_SIZE))
         test_results = evaluate.get_results(model, test_data)
         test_probabilities = list(evaluate.transform_binary_probabilities(test_results))
         test_labels = list(evaluate.get_labels(test_data))
