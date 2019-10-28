@@ -30,7 +30,7 @@ def test(model, train, validation, test_data):
     test_accuracy = 0
     test_probabilities = []
     test_labels = []
-    if test_data.classes != 0:
+    if len(test_data.classes) != 0:
         test_loss, test_accuracy = model.evaluate_generator(test_data, steps=math.ceil(len(test_data)/config.BATCH_SIZE))
         test_results = evaluate.get_results(model, test_data)
         test_probabilities = list(evaluate.transform_binary_probabilities(test_results))
