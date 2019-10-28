@@ -153,9 +153,6 @@ def sort(validation_split=0.2, prefix="free"):
     files = all_identifiers(all_files(prefix))
     _, feat, _ = all_features({ "malignant": ['benign', 'malignant'] })
 
-    for f in feat: 
-        print(f)
-    print(len(feat))
     # create directories
     uniq_features = set(feat.values())
     for f in uniq_features:
