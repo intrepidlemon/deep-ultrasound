@@ -21,6 +21,8 @@ papermill = "*"
 tabulate = "*"
 svgutils = "*"
 tensorflow = "==1.12.0"
+efficientnet = "*"
+keras-efficientnets = {git = "https://github.com/titu1994/keras-efficientnets.git"}
 
 [dev-packages]
 
