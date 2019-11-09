@@ -5,7 +5,7 @@ Same as V1, except:
 """
 import os
 from datetime import datetime
-import efficientnet.keras as efn
+from keras_efficientnets import EfficientNetB3
 from keras.preprocessing.image import ImageDataGenerator
 from keras import optimizers
 from keras.models import Sequential, Model
@@ -18,27 +18,15 @@ from config import config
 
 from data import data
 
-MODEL_NAME = "v3"
+MODEL_NAME = "v5"
 
 def model():
-    convnet = efn.EfficientNetB4(
+    convnet = EfficientNetB3(
         weights="imagenet",
         include_top=False,
         input_shape=(config.IMAGE_SIZE, config.IMAGE_SIZE, 3),
     )
-
-    # fine tune lower layers
-    convnet.trainable = True
-
-    set_trainable = False
-    for layer in convnet.layers:
-        if layer.name == 'block6a_se_excite':
-            set_trainable = True
-        if set_trainable:
-            layer.trainable = True
-        else:
-            layer.trainable = False
-
+    
     # custom Layers
     out = convnet.output
     out = Flatten()(out)

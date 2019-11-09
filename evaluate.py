@@ -11,6 +11,7 @@ from sklearn import manifold
 import pandas
 from config import config
 import math
+import string
 
 sns.set()
 
@@ -26,10 +27,8 @@ def get_results(model, data):
 def clean_filename(filename):
     return "-".join(filename.split("-")[1:])
 
-
 def accession_from_filename(filename):
-    return filename.split("-")[1]
-
+    return filename.split("-")[1].replace(".jpeg", "")
 
 def transform_binary_probabilities(results):
     probabilities = results.flatten()
@@ -87,6 +86,11 @@ def calculate_confusion_matrix(labels, results):
     predictions = transform_binary_predictions(results)
     return confusion_matrix(labels, predictions)
 
+def adjusted_wald(p, n, z=1.96):
+    p_adj = (n * p + (z**2)/2)/(n+z**2)
+    n_adj = n + z**2
+    span = z * math.sqrt(p_adj*(1-p_adj)/n_adj)
+    return max(0, p_adj - span), min(p_adj + span, 1.0)
 
 def calculate_confusion_matrix_stats(labels, results):
     confusion_matrix = calculate_confusion_matrix(labels, results)

@@ -43,7 +43,6 @@ def model():
     out = convnet.output
     out = Flatten()(out)
     out = Dense(256, activation="relu")(out)
-    out = Dense(256, activation="relu")(out)
     out = Dropout(0.5)(out)
     out = Dense(128, activation="relu")(out)
     out = Dropout(0.5)(out)
