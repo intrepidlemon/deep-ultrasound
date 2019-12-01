@@ -1,4 +1,5 @@
 import seaborn as sns
+import seaborn
 import matplotlib.pyplot as plt
 import numpy as np
 import json
@@ -12,9 +13,11 @@ import pandas
 from config import config
 import math
 import string
+from sklearn.metrics import auc, f1_score, precision_recall_curve, roc_curve, accuracy_score, roc_auc_score, average_precision_score, precision_score, recall_score
 
 sns.set()
 
+from notebook_vars import *
 
 def load(filepath):
     return load_model(filepath)
@@ -388,3 +391,313 @@ def plot_multiple_saliency(images,
         ax[i + len(images)].imshow(overlay(grad, image))
         ax[i + len(images)].axis('off')
     return fig
+
+
+def get_pr_data_for_modality(dataset, comparison_models=[], modalities=MODALITIES): 
+    results = list()
+    points = list()
+    for modality in modalities: 
+        labels = dataset["{}-labels".format(modality)]
+        probabilities = dataset["{}-probabilities".format(modality)]
+        predictions = dataset["{}-predictions".format(modality)]
+        print(modality, len(labels), len(probabilities), len(predictions))
+        acc = accuracy_score(labels, predictions)
+        precision, recall, _ = precision_recall_curve(labels, probabilities)
+        pr_auc = auc(recall, precision)
+        stats = calculate_confusion_matrix_stats(labels, probabilities)
+        points.append({
+            "modality": "{} (auc={:.2f}, acc={:.2f})".format(MODALITY_KEY[modality], pr_auc, acc),
+            "precision": stats["PPV"][1],
+            "recall": stats["TPR"][1],
+        })
+        for p, r in zip(precision, recall): 
+            results.append({ "precision": p, "recall": r, "modality": "{} (auc={:.2f}, acc={:.2f})".format(MODALITY_KEY[modality], pr_auc, acc)})
+    for probabilities in comparison_models: 
+        modality = "Radiomics"
+        labels = None
+        for k in dataset.keys(): 
+            if "labels" in k: 
+                labels = dataset[k]
+                break
+        predictions = [p > 0.5 for p in probabilities]
+        print(modality, len(labels), len(probabilities), len(predictions))
+        precision, recall, _ = precision_recall_curve(labels, probabilities)
+        pr_auc = auc(recall, precision)
+        stats = calculate_confusion_matrix_stats(labels, predictions)
+        acc = accuracy_score(labels, predictions)
+        points.append({
+            "modality": "{} (auc={:.2f}, acc={:.2f})".format(MODALITY_KEY[modality], pr_auc, acc),
+            "precision": stats["PPV"][1],
+            "recall": stats["TPR"][1],
+        })
+        for p, r in zip(precision, recall): 
+            results.append({ "precision": p, "recall": r, "modality": "{} (auc={:.2f}, acc={:.2f})".format(MODALITY_KEY[modality], pr_auc, acc)})           
+    return results, pr_auc, []
+        
+def plot_multiple_precision_recall(dataset, experts=[], comparison_models=[], modalities=MODALITIES):
+    results, auc, points = get_pr_data_for_modality(dataset, comparison_models, modalities=modalities)        
+    if len(experts) > 0:
+        for i, expert in enumerate(experts): 
+            labels = None
+            for k in dataset.keys(): 
+                if "labels" in k: 
+                    labels = dataset[k]
+                    break
+            predictions = expert
+            stats = calculate_confusion_matrix_stats(labels, predictions)
+            acc = accuracy_score(labels, predictions)
+            points.append({
+                "precision": stats["PPV"][1],
+                "recall": stats["TPR"][1],                
+                "experts": "Expert {} (acc={:.2f})".format(i + 1, acc), 
+            })
+    fig, ax = plt.subplots()
+    seaborn.lineplot(
+        data=pandas.DataFrame(results),
+        x="recall",
+        y="precision",
+        hue="modality",
+        ax=ax, 
+        err_style=None,
+    )
+    if points: 
+        seaborn.scatterplot(
+            data=pandas.DataFrame(points),
+            x="recall",
+            y="precision",
+            hue="experts",
+            style="experts",                        
+            markers=["o", "v", "s", "P"],
+            palette={ p["experts"]: "black" for p in points },            
+            ax=ax,
+        )
+    ax.set_ylim(-0.04, 1.04)
+    ax.set_xlim(-0.04, 1.02)
+    ax.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    return fig
+
+def get_roc_data_for_modality(dataset, comparison_models=[], modalities=MODALITIES): 
+    results = list()
+    points = list()
+    for modality in modalities: 
+        labels = dataset["{}-labels".format(modality)]
+        probabilities = dataset["{}-probabilities".format(modality)]
+        predictions = dataset["{}-predictions".format(modality)]
+        fpr, tpr, _ = roc_curve(labels, probabilities, drop_intermediate=False)
+        roc_auc = roc_auc_score(labels, probabilities)
+        stats = calculate_confusion_matrix_stats(labels, probabilities)
+        acc = accuracy_score(labels, predictions)
+        points.append({
+            "modality": "{} (auc={:.2f}, acc={:.2f})".format(MODALITY_KEY[modality], roc_auc, acc),
+            "fpr": stats["FPR"][1],
+            "tpr": stats["TPR"][1],
+        })
+        for f, t in zip(fpr, tpr): 
+            results.append({ "fpr": f, "tpr": t, "modality": "{} (auc={:.2f}, acc={:.2f})".format(MODALITY_KEY[modality], roc_auc, acc)})
+    for probabilities in comparison_models: 
+        modality = "Radiomics"
+        labels = None
+        for k in dataset.keys(): 
+            if "labels" in k: 
+                labels = dataset[k]
+                break
+        predictions = [p > 0.5 for p in probabilities]
+        fpr, tpr, _ = roc_curve(labels, probabilities, drop_intermediate=False)
+        roc_auc = roc_auc_score(labels, probabilities)
+        stats = calculate_confusion_matrix_stats(labels, predictions)
+        acc = accuracy_score(labels, predictions)
+        points.append({
+            "modality": "{} (auc={:.2f}, acc={:.2f})".format(MODALITY_KEY[modality], roc_auc, acc),
+            "fpr": stats["FPR"][1],
+            "tpr": stats["TPR"][1],
+        })
+        for f, t in zip(fpr, tpr): 
+            results.append({ "fpr": f, "tpr": t, "modality": "{} (auc={:.2f}, acc={:.2f})".format(MODALITY_KEY[modality], roc_auc, acc)})        
+    return results, roc_auc, []
+
+def get_reliability_data_for_modality(dataset, comparison_models=[], n_bins=10, modalities=MODALITIES): 
+    results = list()
+    points = list()
+    for modality in modalities: 
+        labels = dataset["{}-labels".format(modality)]
+        probabilities = dataset["{}-probabilities".format(modality)]
+        predictions = dataset["{}-predictions".format(modality)]
+        positives, mean_predicted_value = calibration_curve(labels, probabilities, n_bins=n_bins)
+        points.append({
+            "modality": "{}".format(MODALITY_KEY[modality]),
+            "positives": positives,
+            "MPV": mean_predicted_value,
+        })
+        for p, m in zip(positives, mean_predicted_value): 
+            results.append({ "positives": p, "mpv": m, "modality": "{}".format(MODALITY_KEY[modality])})
+    for probabilities in comparison_models: 
+        modality = "Radiomics"
+        labels = None
+        for k in dataset.keys(): 
+            if "labels" in k: 
+                labels = dataset[k]
+                break
+        positives, mean_predicted_value = calibration_curve(labels, probabilities, n_bins=n_bins)
+        points.append({
+            "modality": "{}".format(MODALITY_KEY[modality]),
+            "positives": positives,
+            "MPV": mean_predicted_value,
+        })
+        for p, m in zip(positives, mean_predicted_value): 
+            results.append({ "positives": p, "mpv": m, "modality": "{}".format(MODALITY_KEY[modality])})        
+    return results
+
+def plot_multiple_reliability_curve(dataset, comparison_models=[], n_bins=10, modalities=MODALITIES):
+    results = get_reliability_data_for_modality(dataset, comparison_models, n_bins, modalities=modalities)
+    fig, ax = plt.subplots()
+    seaborn.lineplot(
+        data=pandas.DataFrame(results),
+        x="mpv",
+        y="positives",
+        hue="modality",
+        ax=ax,
+        err_style=None,
+    )
+    ax.plot([0, 1], [0, 1], linestyle='--')
+    ax.set_ylim(-0.04, 1.04)
+    ax.set_xlim(-0.04, 1.02)
+    ax.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    return fig
+
+def plot_multiple_roc_curve(dataset, experts=[], comparison_models=[], modalities=MODALITIES):
+    results, auc, points = get_roc_data_for_modality(dataset, comparison_models, modalities=modalities)
+    if len(experts) > 0:
+        for i, expert in enumerate(experts): 
+            labels = None
+            for k in dataset.keys(): 
+                if "labels" in k: 
+                    labels = dataset[k]
+                    break
+            predictions = expert
+            stats = calculate_confusion_matrix_stats(labels, predictions)
+            acc = accuracy_score(labels, predictions)            
+            points.append({
+                "fpr": stats["FPR"][1],
+                "tpr": stats["TPR"][1],
+                "experts": "Expert {} (acc={:.2f})".format(i + 1, acc),                 
+            })
+    fig, ax = plt.subplots()
+    seaborn.lineplot(
+        data=pandas.DataFrame(results),
+        x="fpr",
+        y="tpr",
+        hue="modality",
+        ax=ax,
+        err_style=None,
+    )
+    if points:     
+        seaborn.scatterplot(
+            data=pandas.DataFrame(points),
+            x="fpr",
+            y="tpr",
+            hue="experts",
+            style="experts",            
+            ax=ax,
+            markers=["o", "v", "s", "P"],
+            palette={ p["experts"]: "black" for p in points },
+        )
+    ax.plot([0, 1], [0, 1], linestyle='--')
+    ax.set_ylim(-0.04, 1.04)
+    ax.set_xlim(-0.04, 1.02)
+    ax.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    return fig
+
+def get_statistics(dataset, experts=[], comparison_models=[], modalities=MODALITIES): 
+    results = list()
+    for modality in modalities: 
+        labels = dataset["{}-labels".format(modality)]
+        probabilities = dataset["{}-probabilities".format(modality)]
+        predictions = dataset["{}-predictions".format(modality)]
+        roc_auc = roc_auc_score(labels, probabilities)
+        precision, recall, _ = precision_recall_curve(labels, probabilities)
+        pr_auc = auc(recall, precision)
+        f1 = f1_score(labels, predictions)
+        d = {
+            "F1 Score": [f1, f1],            
+            "ROC AUC": [roc_auc, roc_auc], 
+            "PR AUC": [pr_auc, pr_auc],
+            **calculate_confusion_matrix_stats(labels, probabilities), 
+            "Modality": [MODALITY_KEY[modality], MODALITY_KEY[modality]], 
+            "Total": [len(labels), len(labels)], 
+            "Malignant": [len([l for l in labels if l]), len([l for l in labels if l])], 
+            "Benign": [len([l for l in labels if not l]), len([l for l in labels if not l])], 
+        } 
+        # remove more that are not relevant to imbalanced datasets
+        del d["TP"]
+        del d["TN"]
+        del d["FN"]
+        del d["FP"]    
+        del d["FPR"]
+        del d["FNR"]
+        d["Acc (95% CI)"] = ["", "{:.2f} ({:.2f}-{:.2f})".format(d["Acc"][1], *adjusted_wald(d["Acc"][1], len(labels)))]
+        d["TPR (95% CI)"] = ["", "{:.2f} ({:.2f}-{:.2f})".format(d["TPR"][1], *adjusted_wald(d["TPR"][1], len([l for l in labels if l])))]
+        d["TNR (95% CI)"] = ["", "{:.2f} ({:.2f}-{:.2f})".format(d["TNR"][1], *adjusted_wald(d["TNR"][1], len([l for l in labels if not l])))]
+        d["acc-low"], d["acc-high"] = adjusted_wald(d["Acc"][1], len(labels))
+        results.append(pandas.DataFrame(d).iloc[[1]])
+    for i, expert in enumerate(experts): 
+        for k in dataset.keys(): 
+            if "labels" in k: 
+                labels = dataset[k]
+                break
+        predictions = expert
+        f1 = f1_score(labels, predictions)        
+        d = {
+            "F1 Score": [f1, f1],            
+            **calculate_confusion_matrix_stats(labels, np.array(predictions)),             
+            "Modality": ["Expert {}".format(i + 1), "Expert {}".format(i + 1)], 
+            "Total": [len(labels), len(labels)], 
+            "Malignant": [len([l for l in labels if l]), len([l for l in labels if l])], 
+            "Benign": [len([l for l in labels if not l]), len([l for l in labels if not l])],             
+        }
+        # remove more that are not relevant to imbalanced datasets (remove from article too)
+        del d["TP"]
+        del d["TN"]
+        del d["FN"]
+        del d["FP"]               
+        del d["FPR"]
+        del d["FNR"]        
+        d["Acc (95% CI)"] = ["", "{:.2f} ({:.2f}-{:.2f})".format(d["Acc"][1], *adjusted_wald(d["Acc"][1], len(labels)))]
+        d["TPR (95% CI)"] = ["", "{:.2f} ({:.2f}-{:.2f})".format(d["TPR"][1], *adjusted_wald(d["TPR"][1], len([l for l in labels if l])))]
+        d["TNR (95% CI)"] = ["", "{:.2f} ({:.2f}-{:.2f})".format(d["TNR"][1], *adjusted_wald(d["TNR"][1], len([l for l in labels if not l])))]        
+        d["acc-low"], d["acc-high"] = adjusted_wald(d["Acc"][1], len(labels))
+        results.append(pandas.DataFrame(d).iloc[[1]])
+    for probabilities in comparison_models: 
+        labels = None
+        for k in dataset.keys(): 
+            if "labels" in k: 
+                labels = dataset[k]
+                break
+        predictions = [p > 0.5 for p in probabilities]
+        roc_auc = roc_auc_score(labels, probabilities)
+        precision, recall, _ = precision_recall_curve(labels, probabilities)
+        pr_auc = auc(recall, precision)
+        f1 = f1_score(labels, predictions)
+        d = {
+            "F1 Score": [f1, f1],            
+            "ROC AUC": [roc_auc, roc_auc], 
+            "PR AUC": [pr_auc, pr_auc],
+            **calculate_confusion_matrix_stats(labels, probabilities), 
+            "Modality": ["Radiomics", "Radiomics"], 
+            "Total": [len(labels), len(labels)], 
+            "Malignant": [len([l for l in labels if l]), len([l for l in labels if l])], 
+            "Benign": [len([l for l in labels if not l]), len([l for l in labels if not l])],             
+        } 
+        # remove more that are not relevant to imbalanced datasets (remove from article too)
+        del d["TP"]
+        del d["TN"]
+        del d["FN"]
+        del d["FP"]         
+        del d["FPR"]
+        del d["FNR"]
+        d["Acc (95% CI)"] = ["", "{:.2f} ({:.2f}-{:.2f})".format(d["Acc"][1], *adjusted_wald(d["Acc"][1], len(labels)))]
+        d["TPR (95% CI)"] = ["", "{:.2f} ({:.2f}-{:.2f})".format(d["TPR"][1], *adjusted_wald(d["TPR"][1], len([l for l in labels if l])))]
+        d["TNR (95% CI)"] = ["", "{:.2f} ({:.2f}-{:.2f})".format(d["TNR"][1], *adjusted_wald(d["TNR"][1], len([l for l in labels if not l])))]        
+        d["acc-low"], d["acc-high"] = adjusted_wald(d["Acc"][1], len(labels))
+        results.append(pandas.DataFrame(d).iloc[[1]])
+
+    return pandas.concat(results, axis=0, sort=False).set_index("Modality")
