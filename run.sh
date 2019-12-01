@@ -1,14 +1,9 @@
-# everything with validation and test free images
-rm -rf $DATA_DIR/liver-ultrasound/test
-rm -rf $DATA_DIR/liver-ultrasound/validation
-rm -rf $DATA_DIR/liver-ultrasound/train
-cp -r $DATA_DIR/liver-ultrasound/free/* $DATA_DIR/liver-ultrasound
-pipenv run python run.py --model v2 --trials 100 --description "free-0"
+# bash run.sh <folder name> <description>
 
 rm -rf $DATA_DIR/liver-ultrasound/test
 rm -rf $DATA_DIR/liver-ultrasound/validation
 rm -rf $DATA_DIR/liver-ultrasound/train
-cp -r $DATA_DIR/liver-ultrasound/fixed/* $DATA_DIR/liver-ultrasound
-pipenv run python run.py --model v2 --trials 100 --description "fixed-0"
+cp -r $DATA_DIR/liver-ultrasound/$1/* $DATA_DIR/liver-ultrasound
+pipenv run python run.py --model v2 --trials 100 --description $2
 
 bash notify.sh

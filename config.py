@@ -23,7 +23,10 @@ class Config(object):
     TEST_DIR = os.path.join(DATA, "test")
     VALIDATION_DIR = os.path.join(DATA, "validation")
     FEATURES = os.path.join(DATA, "features.csv")
-    TEST_SET = os.path.join(DATA, "test.csv")
+    UNCERTAIN_FEATURES = os.path.join(DATA, "c3-c4-features.csv")
+    EXPERTS = os.path.join(DATA, "experts.csv")
+    UNCERTAIN_EXPERTS = os.path.join(DATA, "c3-c4-experts.csv")
+    TEST_SET = os.path.join(DATA, "c3-c4-test.csv")
 
     OUTPUT = os.path.join(DATA_DIR, "liver-ultrasound")
     DB_URL = "sqlite:///{}/results.db".format(OUTPUT)
