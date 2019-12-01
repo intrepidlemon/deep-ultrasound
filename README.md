@@ -1,4 +1,4 @@
-## Deep learning for differentiat of benign and malignant solid liver lesions on ultrasonography
+## Deep learning for differentiation of benign and malignant solid liver lesions on ultrasonography
 
 ### Running this project
 
