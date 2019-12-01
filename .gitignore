@@ -13,4 +13,4 @@ output
 figures
 pushover-secret.sh
 
-.ipynb
+*.ipynb
