@@ -74,7 +74,6 @@ def clear():
 def all_files(prefix="free", raw=config.RAW_DIR):
     return glob.glob(os.path.join(raw, "{}-*".format(prefix)))
 
-
 def all_identifiers(files):
     out = dict()
     for f in files:

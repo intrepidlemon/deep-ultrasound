@@ -17,8 +17,8 @@ class Config(object):
     SECRET = "example secret key"
     LOG_LEVEL = logging.DEBUG
 
-    DATA = os.path.join(DATA_DIR, "liver-ultrasound")
-    RAW_DIR = os.path.join(DATA, "raw")
+    DATA = DATA_DIR
+    RAW_DIR = os.path.join(DATA, "segmented")
     TRAIN_DIR = os.path.join(DATA, "train")
     TEST_DIR = os.path.join(DATA, "test")
     VALIDATION_DIR = os.path.join(DATA, "validation")
@@ -26,13 +26,13 @@ class Config(object):
     UNCERTAIN_FEATURES = os.path.join(DATA, "c3-c4-features.csv")
     EXPERTS = os.path.join(DATA, "experts.csv")
     UNCERTAIN_EXPERTS = os.path.join(DATA, "c3-c4-experts.csv")
-    TEST_SET = os.path.join(DATA, "c3-c4-test.csv")
+    TEST_SET = os.path.join(DATA, "test.csv")
+    UNCERTAIN_TEST_SET = os.path.join(DATA, "c3-c4-test.csv")
 
-    OUTPUT = os.path.join(DATA_DIR, "liver-ultrasound")
+    OUTPUT = DATA_DIR
     DB_URL = "sqlite:///{}/results.db".format(OUTPUT)
     MODEL_DIR = os.path.join(OUTPUT, "models")
     STDOUT_DIR = os.path.join(OUTPUT, "stdout")
     STDERR_DIR = os.path.join(OUTPUT, "stderr")
-
 
 config = Config()

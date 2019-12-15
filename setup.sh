@@ -1,10 +1,8 @@
 set -e
 
-pipenv install --skip-lock
-
-pipenv run python setup.py
+python3.6 setup.py
 
 export FLASK_APP=api.py
-pipenv run flask db init
-pipenv run flask db migrate
-pipenv run flask db upgrade
+flask db init
+flask db migrate
+flask db upgrade
