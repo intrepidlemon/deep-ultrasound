@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 jupyter = "*"
-tensorflow-gpu = "==1.12.0"
+tensorflow-gpu = "==2.12.0"
 keras = "==2.2.4"
 pillow = "*"
 yapf = "*"
